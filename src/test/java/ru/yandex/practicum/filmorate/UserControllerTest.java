@@ -52,10 +52,10 @@ class UserControllerTest {
     @Test
     void checkEmailTest() {
         user.setEmail(null);
-        assertEquals(0, validator.validate(user).size(), "Неверная обработка email с null");
+        assertEquals(1, validator.validate(user).size(), "Неверная обработка email с null");
 
         user.setEmail("");
-        assertEquals(0, validator.validate(user).size(), "Неверная обработка email");
+        assertEquals(1, validator.validate(user).size(), "Неверная обработка email");
 
         user.setEmail("@");
         assertEquals(1, validator.validate(user).size(), "Неверная обработка email");
@@ -71,7 +71,7 @@ class UserControllerTest {
     @Test
     void checkLoginTest() {
         user.setLogin(null);
-        assertEquals(2, validator.validate(user).size(), "Неверная обработка логина");
+        assertEquals(1, validator.validate(user).size(), "Неверная обработка логина");
 
         user.setLogin("                                               ");
         assertEquals(2, validator.validate(user).size(), "Неверная обработка логина");

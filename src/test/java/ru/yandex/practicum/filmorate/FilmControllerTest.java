@@ -52,7 +52,7 @@ class FilmControllerTest {
     @Test
     void checkNameTest() {
         film.setName(null);
-        assertEquals(2, validator.validate(film).size(), "Неправильная обработка имени фильма с null");
+        assertEquals(1, validator.validate(film).size(), "Неправильная обработка имени фильма с null");
 
         film.setName("");
         assertEquals(1, validator.validate(film).size(), "Неправильная обработка имени фильма с null");
