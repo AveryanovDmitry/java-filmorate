@@ -14,14 +14,14 @@ public class User {
     private String name;
 
     @Email(message = "электронная почта не может быть пустой и должна содержать символ @")
+    @NotEmpty
     private String email;
 
-    @NotNull(message = "логин не может быть null")
     @NotBlank(message = "логин не может быть пустым и содержать пробелы")
     @Pattern(regexp = "^\\S*", message = "логин не может быть пустым и содержать пробелы")
     private String login;
 
     @NotNull
-    @Past(message = "дата рождения не может быть в будущем")
+    @PastOrPresent(message = "дата рождения не может быть в будущем")
     private LocalDate birthday;
 }

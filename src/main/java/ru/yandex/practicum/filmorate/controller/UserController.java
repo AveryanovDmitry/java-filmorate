@@ -21,9 +21,7 @@ public class UserController {
 
     @PostMapping
     public User add(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+        checkUserName(user);
         user.setId(id);
         users.put(user.getId(), user);
         id++;
@@ -34,9 +32,7 @@ public class UserController {
     @PutMapping
     public User update(@Valid @RequestBody User user) {
         if (users.containsKey(user.getId())) {
-            if (user.getName().isBlank() || user.getName() == null) {
-                user.setName(user.getLogin());
-            }
+            checkUserName(user);
             users.put(user.getId(), user);
             log.info("Пользователь обновлён по id: {}", user.getId());
             return users.get(user.getId());
@@ -49,5 +45,11 @@ public class UserController {
     @GetMapping
     public List<User> getUsers() {
         return new ArrayList<>(users.values());
+    }
+
+    private void checkUserName(User user) {
+        if (user.getName().isBlank() || user.getName() == null) {
+            user.setName(user.getLogin());
+        }
     }
 }

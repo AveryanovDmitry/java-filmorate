@@ -24,21 +24,20 @@ public class FilmController {
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
-        if (film.getReleaseDate().isBefore(VALID_DATE)) {
-            throw new MyValidationExeption(HttpStatus.BAD_REQUEST, "дата релиза — не раньше 28 декабря 1895 года");
-        }
+        checkReleaseDate(film);
         film.setId(id);
         films.put(film.getId(), film);
         id++;
-        log.info("Фильм, " + film.getName() + " добавлен");
+        log.info("Фильм, {} добавлен", film.getName());
         return films.get(film.getId());
     }
 
     @PutMapping
     public Film update(@Valid @RequestBody Film film) {
         if (films.containsKey(film.getId())) {
+            checkReleaseDate(film);
             films.put(film.getId(), film);
-            log.info("Фильм, " + film.getName() + " обновлён");
+            log.info("Фильм, {} обновлён", film.getName());
             return films.get(film.getId());
         } else {
             log.info("Фильм с id {} не найден", film.getId());
@@ -49,5 +48,12 @@ public class FilmController {
     @GetMapping
     public List<Film> getFilms() {
         return new ArrayList<>(films.values());
+    }
+
+    private void checkReleaseDate(Film film) {
+        if (film.getReleaseDate().isBefore(VALID_DATE)) {
+            throw new MyValidationExeption(HttpStatus.BAD_REQUEST,
+                    "дата релиза — не раньше 28 декабря 1895 года");
+        }
     }
 }

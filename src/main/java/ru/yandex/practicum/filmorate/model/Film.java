@@ -14,7 +14,6 @@ public class Film {
     @EqualsAndHashCode.Exclude
     private int id;
 
-    @NotNull
     @NotBlank
     private String name;
 
