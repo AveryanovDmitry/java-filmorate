@@ -6,6 +6,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.*;
 import java.time.LocalDate;
@@ -22,7 +24,7 @@ class FilmControllerTest {
 
     @BeforeEach
     void init() {
-        filmController = new FilmController();
+        filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
         film = Film.builder()
                 .name("nisi eiusmod")
                 .description("adipisicing")
