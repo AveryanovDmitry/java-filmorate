@@ -16,7 +16,7 @@ public class FilmController {
     FilmService filmService;
 
     @Autowired
-    public FilmController(FilmService filmService){
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
     }
 
@@ -26,8 +26,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-       return filmService.update(film);
+    public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
+        return new ResponseEntity<>(filmService.update(film), HttpStatus.OK);
     }
 
     @GetMapping
@@ -41,10 +41,11 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film addLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public ResponseEntity<Film> addLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLikeFilm(id, userId);
-        return filmService.getById(id);
+        return new ResponseEntity<>(filmService.getById(id), HttpStatus.OK);
     }
+
     @DeleteMapping("/{id}/like/{userId}")
     public ResponseEntity<Film> deleteLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.deleteLikeFilm(id, userId);

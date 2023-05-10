@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
+import ru.yandex.practicum.filmorate.exeption.StorageException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film update(Film film) {
-        checkId(id);
+        checkId(film.getId());
         films.put(film.getId(), film);
         log.info("Фильм, {} обновлён", film.getName());
         return films.get(film.getId());

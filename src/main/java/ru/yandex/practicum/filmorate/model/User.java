@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
 public class User {
     @EqualsAndHashCode.Exclude
     private int id;
@@ -28,6 +27,13 @@ public class User {
     private LocalDate birthday;
 
     private Set<Integer> friends = new HashSet<>();
+
+    public User(String name, String login, String email, LocalDate birthday) {
+        this.name = name;
+        this.login = login;
+        this.email = email;
+        this.birthday = birthday;
+    }
 
     public void addFriend(Integer idFriend) {
         friends.add(idFriend);

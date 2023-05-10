@@ -24,12 +24,8 @@ class UserControllerTest {
     @BeforeEach
     void init() {
         userController = new UserController(new UserService(new InMemoryUserStorage()));
-        user = User.builder()
-                .login("dolore")
-                .name("Nick Name")
-                .email("mail@mail.ru")
-                .birthday(LocalDate.of(1946, 8, 20))
-                .build();
+        user = new User("dolore", "Nick_Name",
+                "mail@mail.ru", LocalDate.of(1946, 8, 20));
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }

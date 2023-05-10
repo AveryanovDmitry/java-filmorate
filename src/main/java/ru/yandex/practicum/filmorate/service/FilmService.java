@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
+import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -48,17 +49,15 @@ public class FilmService {
     }
 
     public void deleteLikeFilm(Integer filmId, Integer userId) {
+        validateIsPositive(userId);
+        validateIsPositive(filmId);
         filmStorage.getById(filmId).deleteLike(userId);
         log.info("удалили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 
     public List<Film> getPopularFilms(Integer count) {
-        Comparator<Film> filmComparator = (film1, film2) -> {
-            return film1.getLikes().size() - film2.getLikes().size();
-        };
-
         return filmStorage.getFilms().stream()
-                .sorted(filmComparator)
+                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
     }
@@ -67,6 +66,12 @@ public class FilmService {
         if (film.getReleaseDate().isBefore(VALID_DATE)) {
             throw new MyValidationExeption(HttpStatus.BAD_REQUEST,
                     "дата релиза — не раньше 28 декабря 1895 года");
+        }
+    }
+
+    private void validateIsPositive(Integer userId) {
+        if (userId < 1) {
+            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "id пользователя должно быть положительным числом.");
         }
     }
 }

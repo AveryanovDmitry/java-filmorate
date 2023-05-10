@@ -88,7 +88,7 @@ public class UserService {
 
     private void checkUserAndFriendId(Integer user, Integer friend) {
         if (user < 1 || friend < 1) {
-            throw new MyValidationExeption(HttpStatus.BAD_REQUEST, "Id должны содержать числа больше нуля");
+            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "Id должны содержать числа больше нуля");
         }
     }
 }

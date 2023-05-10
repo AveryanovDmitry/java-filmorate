@@ -25,12 +25,9 @@ class FilmControllerTest {
     @BeforeEach
     void init() {
         filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
-        film = Film.builder()
-                .name("nisi eiusmod")
-                .description("adipisicing")
-                .releaseDate(LocalDate.of(1967, 3, 25))
-                .duration(100)
-                .build();
+        film = new Film("nisi eiusmod", LocalDate.of(1967, 3, 25),
+                "adipisicing", 100);
+
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }

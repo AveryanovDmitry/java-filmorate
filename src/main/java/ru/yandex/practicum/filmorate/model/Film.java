@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
 public class Film {
     @EqualsAndHashCode.Exclude
     private int id;
@@ -32,11 +31,22 @@ public class Film {
 
     private Set<Integer> likes = new HashSet<>();
 
+    private Integer rate;
+
+    public Film(String name, LocalDate releaseDate, String description, Integer duration) {
+        this.name = name;
+        this.description = description;
+        this.releaseDate = releaseDate;
+        this.duration = duration;
+    }
+
     public void addLike(Integer idUser) {
         likes.add(idUser);
+        rate = likes.size();
     }
 
     public void deleteLike(Integer idUser) {
         likes.remove(idUser);
+        rate = likes.size();
     }
 }
