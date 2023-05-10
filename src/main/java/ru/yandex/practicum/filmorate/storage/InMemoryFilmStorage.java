@@ -4,13 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
-import ru.yandex.practicum.filmorate.exeption.StorageException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -37,9 +33,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new ArrayList<>(films.values());
     }
 
-    public Film getById(Integer id) {
+    public Optional<Film> getById(Integer id) {
         checkId(id);
-        return films.get(id);
+        return Optional.of(films.get(id));
     }
 
     private void checkId(Integer id) {

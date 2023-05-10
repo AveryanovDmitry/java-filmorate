@@ -1,29 +1,24 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
+import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
     private static final LocalDate VALID_DATE = LocalDate.of(1895, 12, 28);
-    private FilmStorage filmStorage;
-
-    @Autowired
-    public FilmService(FilmStorage filmStorage) {
-        this.filmStorage = filmStorage;
-    }
+    private final FilmStorage filmStorage;
 
     public Film add(Film film) {
         checkReleaseDate(film);
@@ -40,18 +35,19 @@ public class FilmService {
     }
 
     public Film getById(Integer id) {
-        return filmStorage.getById(id);
+        return filmStorage.getById(id)
+                .orElseThrow(() -> new NotFoundException("Фильма с id " + id + " не существует"));
     }
 
     public void addLikeFilm(Integer filmId, Integer userId) {
-        filmStorage.getById(filmId).addLike(userId);
+        getById(filmId).addLike(userId);
         log.info("добавили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 
     public void deleteLikeFilm(Integer filmId, Integer userId) {
         validateIsPositive(userId);
         validateIsPositive(filmId);
-        filmStorage.getById(filmId).deleteLike(userId);
+        getById(filmId).deleteLike(userId);
         log.info("удалили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 

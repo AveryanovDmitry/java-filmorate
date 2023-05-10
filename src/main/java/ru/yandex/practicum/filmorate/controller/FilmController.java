@@ -1,24 +1,23 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.util.List;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    FilmService filmService;
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
+    private final FilmService filmService;
 
     @PostMapping
     public Film add(@Valid @RequestBody Film film) {
@@ -26,8 +25,8 @@ public class FilmController {
     }
 
     @PutMapping
-    public ResponseEntity<Film> update(@Valid @RequestBody Film film) {
-        return new ResponseEntity<>(filmService.update(film), HttpStatus.OK);
+    public Film update(@Valid @RequestBody Film film) {
+        return filmService.update(film);
     }
 
     @GetMapping
@@ -41,19 +40,25 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public ResponseEntity<Film> addLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public Film addLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.addLikeFilm(id, userId);
-        return new ResponseEntity<>(filmService.getById(id), HttpStatus.OK);
+        return filmService.getById(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public ResponseEntity<Film> deleteLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLikeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         filmService.deleteLikeFilm(id, userId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(required = false, defaultValue = "10") Integer count) {
+    @Validated
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") @Positive Integer count) {
         return filmService.getPopularFilms(count);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<String> exceptionHandeler(ConstraintViolationException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

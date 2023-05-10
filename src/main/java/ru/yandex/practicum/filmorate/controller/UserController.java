@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -12,13 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserService userService;
 
     @PostMapping
     public User add(@Valid @RequestBody User user) {
@@ -41,15 +36,15 @@ public class UserController {
     }
 
     @PutMapping("/{userId}/friends/{friendId}")
-    public ResponseEntity<User> putUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+    public User putUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
         userService.addFriend(userId, friendId);
-        return new ResponseEntity<>(userService.getUsers().get(userId), HttpStatus.OK);
+        return userService.getUsers().get(userId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
-    public ResponseEntity<User> deleteUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
         userService.deleteFriend(userId, friendId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/{userId}/friends")
@@ -58,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public ResponseEntity<List<User>> getCommonUsersFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
-        return new ResponseEntity<>(userService.getCommonFriends(id, otherId), HttpStatus.OK);
+    public List<User> getCommonUsersFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }
