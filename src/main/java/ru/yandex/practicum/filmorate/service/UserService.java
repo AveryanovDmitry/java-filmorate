@@ -2,14 +2,13 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +23,7 @@ public class UserService {
     }
 
     public User update(User user) {
+        checkUserName(user);
         return userStorage.update(user);
     }
 
@@ -56,8 +56,9 @@ public class UserService {
 
     public List<User> getCommonFriends(Integer idUser, Integer idFriend) {
         checkUserAndFriendId(idUser, idFriend);
+        Set<Integer> friends = getById(idFriend).getFriends();
         List<User> commonFriend = getById(idUser).getFriends().stream()
-                .filter(id -> getById(idFriend).getFriends().contains(id))
+                .filter(friends::contains)
                 .map(this::getById)
                 .collect(Collectors.toList());
         log.info("У пользователей с id {} и {},  найдено {} общих друзей", idUser, idFriend, commonFriend.size());
@@ -72,7 +73,7 @@ public class UserService {
 
     private void checkUserAndFriendId(Integer user, Integer friend) {
         if (user < 1 || friend < 1) {
-            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "Id должны содержать числа больше нуля");
+            throw new NotFoundException("Id должны содержать числа больше нуля");
         }
     }
 }

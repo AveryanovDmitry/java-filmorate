@@ -53,7 +53,7 @@ public class FilmService {
 
     public List<Film> getPopularFilms(Integer count) {
         return filmStorage.getFilms().stream()
-                .sorted((film1, film2) -> film2.getLikes().size() - film1.getLikes().size())
+                .sorted((film1, film2) -> film2.getRate() - film1.getRate())
                 .limit(count)
                 .collect(Collectors.toList());
     }
@@ -67,7 +67,7 @@ public class FilmService {
 
     private void validateIsPositive(Integer userId) {
         if (userId < 1) {
-            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "id пользователя должно быть положительным числом.");
+            throw new NotFoundException("id должно быть положительным числом.");
         }
     }
 }

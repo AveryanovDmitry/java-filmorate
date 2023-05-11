@@ -19,19 +19,14 @@ public class InMemoryUserStorage implements UserStorage {
         users.put(user.getId(), user);
         id++;
         log.info("Пользователь добавлен: {}", user);
-        return users.get(user.getId());
-
+        return user;
     }
 
     public User update(User user) {
-        if (users.containsKey(user.getId())) {
-            users.put(user.getId(), user);
-            log.info("Пользователь обновлён по id: {}", user.getId());
-            return users.get(user.getId());
-        } else {
-            log.info("Пользователя с таким id не существует: {}", user.getId());
-            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "Пользователя с таким id не существует");
-        }
+        checkId(user.getId());
+        users.put(user.getId(), user);
+        log.info("Пользователь обновлён по id: {}", user.getId());
+        return user;
     }
 
     public List<User> getUsers() {
@@ -39,8 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public Optional<User> getById(Integer id) {
-        checkId(id);
-        return Optional.of(users.get(id));
+        return Optional.ofNullable(users.get(id));
     }
 
     private void checkId(Integer id) {

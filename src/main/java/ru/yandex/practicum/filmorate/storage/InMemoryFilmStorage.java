@@ -19,14 +19,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.put(film.getId(), film);
         id++;
         log.info("Фильм, {} добавлен", film.getName());
-        return films.get(film.getId());
+        return film;
     }
 
     public Film update(Film film) {
         checkId(film.getId());
         films.put(film.getId(), film);
         log.info("Фильм, {} обновлён", film.getName());
-        return films.get(film.getId());
+        return film;
     }
 
     public List<Film> getFilms() {
@@ -34,8 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Optional<Film> getById(Integer id) {
-        checkId(id);
-        return Optional.of(films.get(id));
+        return Optional.ofNullable(films.get(id));
     }
 
     private void checkId(Integer id) {
