@@ -7,3 +7,7 @@
 База данных должна поддерживать бизнес-логику, предусмотренную в приложении.
 
 ![Untitled (1)](https://github.com/AveryanovDmitry/java-filmorate/assets/45557026/0d009469-79ed-4a2d-b172-a9fb51a9a16b)
+
+
+ссылка на схему: https://dbdiagram.io/d/6468f277dca9fb07c47274f2
+
