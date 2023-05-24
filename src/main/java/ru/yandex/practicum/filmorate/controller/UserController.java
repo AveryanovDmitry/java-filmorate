@@ -1,55 +1,59 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
-@Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
-    private int id = 1;
+    private final UserService userService;
 
     @PostMapping
     public User add(@Valid @RequestBody User user) {
-        checkUserName(user);
-        user.setId(id);
-        users.put(user.getId(), user);
-        id++;
-        log.info("Пользователь добавлен: {}", user);
-        return users.get(user.getId());
+        return userService.add(user);
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if (users.containsKey(user.getId())) {
-            checkUserName(user);
-            users.put(user.getId(), user);
-            log.info("Пользователь обновлён по id: {}", user.getId());
-            return users.get(user.getId());
-        } else {
-            log.info("Пользователя с таким id не существует: {}", user.getId());
-            throw new MyValidationExeption(HttpStatus.NOT_FOUND, "Пользователя с таким id не существует");
-        }
+        return userService.update(user);
     }
 
     @GetMapping
     public List<User> getUsers() {
-        return new ArrayList<>(users.values());
+        return userService.getUsers();
     }
 
-    private void checkUserName(User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        return userService.getById(id);
+    }
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    public User putUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+        userService.addFriend(userId, friendId);
+        return userService.getUsers().get(userId);
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUserFriend(@PathVariable Integer userId, @PathVariable Integer friendId) {
+        userService.deleteFriend(userId, friendId);
+    }
+
+    @GetMapping("/{userId}/friends")
+    public List<User> getUserFriends(@PathVariable Integer userId) {
+        return userService.getUserFriends(userId);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonUsersFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 }
