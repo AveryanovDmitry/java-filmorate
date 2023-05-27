@@ -6,7 +6,7 @@
 Все неключевые атрибуты должны зависеть только от первичного ключа, а не от других неключевых атрибутов.
 База данных должна поддерживать бизнес-логику, предусмотренную в приложении.
 
-![Untitled (2)](https://github.com/AveryanovDmitry/java-filmorate/assets/45557026/547f5227-2335-4e8a-9911-60cd18ad24a9)
+![Untitled (3)](https://github.com/AveryanovDmitry/java-filmorate/assets/45557026/1abbd761-25db-4cc7-bca1-adf74e686250)
 
 
 ссылка на схему: https://dbdiagram.io/d/6468f277dca9fb07c47274f2
