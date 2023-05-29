@@ -28,12 +28,10 @@ class UserTests {
     @BeforeEach
     void createdUserForDB() {
         if (userStorage.getUsers().size() != 2) {
-            User firstTestUser = new User("user1@yandex.ru", "User1",
-                    "user1", LocalDate.parse("2005-01-01"));
-            userStorage.add(firstTestUser);
-            User SecondTestUser = new User("user2@yandex.ru", "User2",
-                    "user2", LocalDate.parse("1995-01-01"));
-            userStorage.add(SecondTestUser);
+            userStorage.add(new User("user1@yandex.ru", "User1", "user1",
+                    LocalDate.parse("2005-01-01")));
+            userStorage.add(new User("user2@yandex.ru", "User2", "user2",
+                    LocalDate.parse("1995-01-01")));
         }
         userStorage.deleteFriends(1, 2);
     }
@@ -66,11 +64,9 @@ class UserTests {
         mapForCheck.put("name", updateUser.getName());
         mapForCheck.put("birthday", updateUser.getBirthday());
         for (Map.Entry<String, Object> entry : mapForCheck.entrySet()) {
-            assertThat(userStorageUser)
-                    .isPresent()
-                    .hasValueSatisfying(user ->
-                            assertThat(user).hasFieldOrPropertyWithValue(entry.getKey(), entry.getValue())
-                    );
+            assertThat(userStorageUser).isPresent().hasValueSatisfying(user -> assertThat(user)
+                    .hasFieldOrPropertyWithValue(entry.getKey(), entry.getValue())
+            );
         }
     }
 
