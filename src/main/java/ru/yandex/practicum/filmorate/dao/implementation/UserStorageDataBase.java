@@ -35,7 +35,7 @@ public class UserStorageDataBase implements UserStorage {
         log.info("Пользователь добавлен: {}", user);
         return jdbcTemplate.query("SELECT * FROM USERS WHERE email = ? and name = ? and birthday = ? and login = ?",
                 USER_MAPPER, user.getEmail(), user.getName(),
-                user.getBirthday(), user.getLogin()).get(0);//делаю запрос чтобы вернуть юзера с id под которым он был добавлен в бд
+                user.getBirthday(), user.getLogin()).get(0);
     }
 
     @Override

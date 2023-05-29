@@ -104,10 +104,7 @@ class UserTests {
 
     void checkFindUserById(Integer idUser) {
         Optional<User> userStorageById = userStorage.getById(idUser);
-        assertThat(userStorageById)
-                .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", idUser)
-                );
+        assertThat(userStorageById).isPresent().hasValueSatisfying(user -> assertThat(user)
+                .hasFieldOrPropertyWithValue("id", idUser));
     }
 }

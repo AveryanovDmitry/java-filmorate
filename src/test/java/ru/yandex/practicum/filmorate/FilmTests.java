@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.dao.GenreStorage;
-import ru.yandex.practicum.filmorate.dao.MpaStorage;
 import ru.yandex.practicum.filmorate.dao.implementation.FilmStorageDataBase;
 import ru.yandex.practicum.filmorate.dao.implementation.UserStorageDataBase;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -84,10 +83,7 @@ class FilmTests {
 
     void checkFindFilmById(Integer idFilm) {
         Optional<Film> filmOptional = filmDbStorage.getById(idFilm);
-        assertThat(filmOptional)
-                .isPresent()
-                .hasValueSatisfying(film ->
-                        assertThat(film).hasFieldOrPropertyWithValue("id", idFilm)
-                );
+        assertThat(filmOptional).isPresent().hasValueSatisfying(film -> assertThat(film)
+                .hasFieldOrPropertyWithValue("id", idFilm));
     }
 }

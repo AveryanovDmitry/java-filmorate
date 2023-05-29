@@ -58,8 +58,8 @@ public class GenreStorageDataBase implements GenreStorage {
                 "FROM FILM_TO_GENRE\n" +
                 "WHERE FILM_ID = %d AND GENRE_ID = %d", idFilm, idGenre);
         if (jdbcTemplate.queryForObject(sqlQuery, Integer.class) == 1) {
-            return jdbcTemplate.update("DELETE FROM FILM_TO_GENRE WHERE FILM_ID = ? AND GENRE_ID = ?"
-                    , idFilm, idGenre) > 0;
+            return jdbcTemplate.update("DELETE FROM FILM_TO_GENRE WHERE FILM_ID = ? AND GENRE_ID = ?",
+                    idFilm, idGenre) > 0;
         }
         return false;
     }
