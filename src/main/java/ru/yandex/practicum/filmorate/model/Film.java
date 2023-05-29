@@ -8,8 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Film {
@@ -33,22 +32,26 @@ public class Film {
     @JsonIgnore
     private Set<Integer> likes = new HashSet<>();
 
-    public Film(String name, LocalDate releaseDate, String description, Integer duration) {
+    private Mpa mpa;
+    private List<Genre> genres;
+
+    private Integer rate;
+
+    public Film(String name, String description, LocalDate releaseDate, Integer duration,
+                Mpa mpa, List<Genre> genres, Integer rate) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-    }
-
-    public void addLike(Integer idUser) {
-        likes.add(idUser);
-    }
-
-    public void deleteLike(Integer idUser) {
-        likes.remove(idUser);
+        this.mpa = mpa;
+        this.genres = Objects.requireNonNullElseGet(genres, ArrayList::new);
+        this.rate = Objects.requireNonNullElseGet(rate, this::getRate);
     }
 
     public int getRate() {
-        return likes.size();
+        if (rate == null || rate < likes.size()) {
+            rate = likes.size();
+        }
+        return rate;
     }
 }

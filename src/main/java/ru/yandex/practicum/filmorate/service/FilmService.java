@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -26,6 +25,7 @@ public class FilmService {
     }
 
     public Film update(Film film) {
+        checkId(film.getId());
         checkReleaseDate(film);
         return filmStorage.update(film);
     }
@@ -40,22 +40,19 @@ public class FilmService {
     }
 
     public void addLikeFilm(Integer filmId, Integer userId) {
-        getById(filmId).addLike(userId);
+        filmStorage.addLike(filmId, userId);
         log.info("добавили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 
     public void deleteLikeFilm(Integer filmId, Integer userId) {
         validateIsPositive(userId);
         validateIsPositive(filmId);
-        getById(filmId).deleteLike(userId);
+        filmStorage.deleteLike(filmId, userId);
         log.info("удалили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 
     public List<Film> getPopularFilms(Integer count) {
-        return filmStorage.getFilms().stream()
-                .sorted((film1, film2) -> film2.getRate() - film1.getRate())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.mostPopulars(count);
     }
 
     private void checkReleaseDate(Film film) {
@@ -68,6 +65,14 @@ public class FilmService {
     private void validateIsPositive(Integer userId) {
         if (userId < 1) {
             throw new NotFoundException("id должно быть положительным числом.");
+        }
+    }
+
+    private Film checkId(Integer id) {
+        if (id > 0) {
+            return filmStorage.getById(id).orElseThrow(() -> new NotFoundException("Фильма с таким id не существует"));
+        } else {
+            throw new NotFoundException("Проверьте id пользователя");
         }
     }
 }
