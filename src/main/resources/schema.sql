@@ -22,6 +22,9 @@ create table IF NOT EXISTS USERS
     constraint USERS_PK primary key (id)
 );
 
+create unique index if not exists USER_EMAIL_UINDEX on USERS (email);
+create unique index if not exists USER_LOGIN_UINDEX on USERS (login);
+
 create table IF NOT EXISTS FRIENDS
 (
     first_user_id  INTEGER               not null,
@@ -30,10 +33,9 @@ create table IF NOT EXISTS FRIENDS
     constraint first_user_id
         foreign key (first_user_id) references USERS (id),
     constraint second_user_id
-        foreign key (second_user_id) references USERS (id)
+        foreign key (second_user_id) references USERS (id),
+    constraint FRIENDS_PK PRIMARY KEY (first_user_id, second_user_id)
 );
-
-
 
 create table IF NOT EXISTS FILMS
 (
@@ -53,7 +55,8 @@ create table IF NOT EXISTS GENRE_FILM
     genre_id INTEGER not null,
     film_id  INTEGER not null,
     constraint FILM_TO_GENRE_FILMS_FK foreign key (film_id) references FILMS,
-    constraint FILM_TO_GENRE_GENRE_FK foreign key (genre_id) references GENRE (genre_id)
+    constraint FILM_TO_GENRE_GENRE_FK foreign key (genre_id) references GENRE (genre_id),
+    constraint GENRE_FILM_PK PRIMARY KEY (genre_id, film_id)
 );
 
 create table IF NOT EXISTS LIKES
@@ -63,7 +66,8 @@ create table IF NOT EXISTS LIKES
     constraint LIKES_USERS_ID_FK
         foreign key (user_id) references USERS (id),
     constraint LIKES_FILMS_ID_FK
-        foreign key (film_id) references FILMS (id)
+        foreign key (film_id) references FILMS (id),
+    constraint LIKES_PK PRIMARY KEY (user_id, film_id)
 );
 
 

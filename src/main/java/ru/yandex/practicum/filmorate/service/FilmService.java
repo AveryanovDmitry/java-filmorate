@@ -8,9 +8,13 @@ import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -19,24 +23,47 @@ public class FilmService {
     private static final LocalDate VALID_DATE = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
 
+    private final GenreService genreService;
+
     public Film add(Film film) {
         checkReleaseDate(film);
-        return filmStorage.add(film);
+        Film filmWithId = filmStorage.add(film);
+
+        if (!film.getGenres().isEmpty()) {
+            genreService.addGenres(film.getGenres(), filmWithId.getId());
+        }
+        return filmWithId;
     }
 
     public Film update(Film film) {
         checkId(film.getId());
         checkReleaseDate(film);
-        return filmStorage.update(film);
+        filmStorage.update(film);
+        genreService.update(film.getGenres(), film.getId());
+
+        return film;
     }
 
     public List<Film> getFilms() {
-        return filmStorage.getFilms();
+        List<Film> films = filmStorage.getFilms();
+        if (!films.isEmpty()) {
+            List<Integer> idFilms = films.stream().map(Film::getId).collect(Collectors.toList());
+            Map<Integer, LinkedHashSet<Genre>> mapIdFilmGenres = genreService.getGenresListFilmsId(idFilms);
+            for (Film film : films) {
+                if (mapIdFilmGenres.containsKey(film.getId())) {
+                    film.setGenres(mapIdFilmGenres.get(film.getId()));
+                }
+            }
+        }
+
+        return films;
     }
 
     public Film getById(Integer id) {
-        return filmStorage.getById(id)
+        Film film = filmStorage.getById(id)
                 .orElseThrow(() -> new NotFoundException("Фильма с id " + id + " не существует"));
+        film.setGenres(genreService.getFilmGenresByFilmId(id));
+        return film;
     }
 
     public void addLikeFilm(Integer filmId, Integer userId) {

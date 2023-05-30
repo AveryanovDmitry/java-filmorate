@@ -16,9 +16,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +33,7 @@ class FilmTests {
     @BeforeEach
     void createdFilmForDB() {
         if (filmDbStorage.getFilms().size() != 2) {
-            List<Genre> genres = new ArrayList<>();
+            LinkedHashSet<Genre> genres = new LinkedHashSet<>();
             genres.add(new Genre(2, genreDbStorage.findById(2)));
             Film film = new Film("Film1", "Description film1", LocalDate.parse("1999-01-01"),
                     80, new Mpa(1, "G"), genres, 4);

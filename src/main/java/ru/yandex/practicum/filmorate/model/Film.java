@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
@@ -28,29 +27,26 @@ public class Film {
     @NotNull
     @Positive(message = "продолжительность должна быть положительной")
     private Integer duration;
-
-    @JsonIgnore
-    private Set<Integer> likes = new HashSet<>();
-
+    @NotNull
     private Mpa mpa;
-    private List<Genre> genres;
+    private Set<Genre> genres;
 
     private Integer rate;
 
     public Film(String name, String description, LocalDate releaseDate, Integer duration,
-                Mpa mpa, List<Genre> genres, Integer rate) {
+                Mpa mpa, LinkedHashSet<Genre> genres, Integer rate) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
-        this.genres = Objects.requireNonNullElseGet(genres, ArrayList::new);
+        this.genres = Objects.requireNonNullElseGet(genres, LinkedHashSet::new);
         this.rate = Objects.requireNonNullElseGet(rate, this::getRate);
     }
 
     public int getRate() {
-        if (rate == null || rate < likes.size()) {
-            rate = likes.size();
+        if (rate == null) {
+            rate = 0;
         }
         return rate;
     }

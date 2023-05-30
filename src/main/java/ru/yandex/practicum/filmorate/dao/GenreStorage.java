@@ -1,20 +1,25 @@
 package ru.yandex.practicum.filmorate.dao;
 
-import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Genre;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Component
 public interface GenreStorage {
 
-    void add(Integer genre, Integer film);
+    void add(Set<Genre> genres, Integer film);
 
     String findById(Integer id);
 
-    List<Genre> findAll();
+    Set<Genre> findAll();
 
-    List<Genre> getGenres(Integer filmId);
+    Set<Genre> getFilmGenresByFilmId(Integer filmId);
 
     boolean deleteGenre(Integer idFilm, Integer idGenre);
+
+    void updateGenre(Set<Genre> genres, Integer idFilm);
+
+    Map<Integer, LinkedHashSet<Genre>> getGenresListFilmsId(List<Integer> idFilms);
 }

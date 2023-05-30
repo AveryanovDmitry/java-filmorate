@@ -1,54 +1,38 @@
 package ru.yandex.practicum.filmorate.dao.implementation;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
-import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.*;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FilmStorageDataBase implements FilmStorage {
-    private static final FilmMapper FILM_MAPPER = new FilmMapper();
+    private final FilmMapper filmMapper;
     private final JdbcTemplate jdbcTemplate;
-    private final GenreStorage genreDb;
-
-    @Autowired
-    public FilmStorageDataBase(JdbcTemplate jdbcTemplate, GenreStorage genreDb) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreDb = genreDb;
-    }
 
     @Override
     public Film add(Film film) {
-        System.out.println(film);
-        jdbcTemplate.update("INSERT INTO FILMS(name, mpa_id, description, releaseDate, duration, rate)" +
-                        " values (?,?,?,?,?,?)",
-                film.getName(), film.getMpa().getId(),
-                film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getRate());
-        log.info("Фильм, {} добавлен", film.getName());
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("FILMS")
+                .usingGeneratedKeyColumns("id");
 
-        Film filmAdded = jdbcTemplate.query("SELECT *, mpa.MPA_NAME " +
-                        "FROM FILMS as films " +
-                        "JOIN MPA as mpa ON films.mpa_id = mpa.mpa_id " +
-                        "WHERE films.name = ? and films.description = ? and films.releaseDate = ?",
-                FILM_MAPPER, film.getName(), film.getDescription(), film.getReleaseDate()).get(0);
+        Map<String, Object> filmInMap = Map.of("name", film.getName(), "mpa_id", film.getMpa().getId(),
+                "description", film.getDescription(), "releaseDate", film.getReleaseDate(),
+                "duration", film.getDuration(), "rate", film.getRate());
+        int idUserInBD = simpleJdbcInsert.executeAndReturnKey(filmInMap).intValue();
+        film.setId(idUserInBD);
 
-        if (!film.getGenres().isEmpty()) {
-            film.getGenres().forEach((genre) -> genreDb.add(genre.getId(), filmAdded.getId()));
-            log.info("Добавлены жанры: {}", genreDb.getGenres(filmAdded.getId()));
-            filmAdded.setGenres(genreDb.getGenres(filmAdded.getId()));
-        }
-        return filmAdded;
+        return film;
     }
 
-    public Film update(Film film) {
+    public void update(Film film) {
         String sqlQuery = "UPDATE FILMS " +
                 "SET name = ?, mpa_id = ?, description = ? , releaseDate = ?, duration = ?, rate = ? " +
                 "WHERE id = ?";
@@ -60,29 +44,18 @@ public class FilmStorageDataBase implements FilmStorage {
                 film.getDuration(),
                 film.getRate(),
                 film.getId());
-        jdbcTemplate.update("DELETE FROM GENRE_FILM WHERE FILM_ID = ?", film.getId());
-        LinkedHashSet<Genre> uniqGenres = new LinkedHashSet<>(film.getGenres());
-        uniqGenres.forEach((genre) -> genreDb.add(genre.getId(), film.getId()));
-        log.info("Фильм, {} обновлён", film.getName());
-        return getById(film.getId()).get();
     }
 
     public List<Film> getFilms() {
-        List<Film> films = jdbcTemplate.query("SELECT * FROM FILMS JOIN MPA ON FILMS.mpa_id = MPA.mpa_id",
-                new FilmMapper());
-        if (!films.isEmpty()) {
-            films.forEach((film) -> film.setGenres(genreDb.getGenres(film.getId())));
-        }
-        return films;
+        return jdbcTemplate.query("SELECT * FROM FILMS JOIN MPA ON FILMS.mpa_id = MPA.mpa_id", new FilmMapper());
     }
 
     public Optional<Film> getById(Integer id) {
         List<Film> film = jdbcTemplate.query("SELECT * FROM FILMS " +
                 "JOIN MPA ON FILMS.mpa_id = MPA.mpa_id " +
-                "WHERE FILMS.id = ?", FILM_MAPPER, id);
+                "WHERE FILMS.id = ?", filmMapper, id);
         if (!film.isEmpty()) {
             Film findFilm = film.get(0);
-            findFilm.setGenres(genreDb.getGenres(findFilm.getId()));
             return Optional.of(findFilm);
         }
         return Optional.empty();
@@ -106,7 +79,7 @@ public class FilmStorageDataBase implements FilmStorage {
                 "GROUP BY films.id " +
                 "ORDER BY count_likes DESC, films.name " +
                 "LIMIT %d", limit);
-        return jdbcTemplate.query(sqlQuery, FILM_MAPPER);
+        return jdbcTemplate.query(sqlQuery, filmMapper);
     }
 
     @Override

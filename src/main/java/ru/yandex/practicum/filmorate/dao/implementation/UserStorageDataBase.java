@@ -16,26 +16,26 @@ import java.util.*;
 @Component
 @Slf4j
 public class UserStorageDataBase implements UserStorage {
-    private static final UserMapper USER_MAPPER = new UserMapper();
+    private final UserMapper userMapper;
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserStorageDataBase(JdbcTemplate jdbcTemplate) {
+    public UserStorageDataBase(JdbcTemplate jdbcTemplate, UserMapper userMapper) {
         this.jdbcTemplate = jdbcTemplate;
+        this.userMapper = userMapper;
     }
 
     @Override
     public User add(User user) {
-        jdbcTemplate.update("INSERT INTO USERS(email, login, name, birthday) VALUES(?,?,?,?)",
-                user.getEmail(),
-                user.getLogin(),
-                user.getName(),
-                user.getBirthday()
-        );
-        log.info("Пользователь добавлен: {}", user);
-        return jdbcTemplate.query("SELECT * FROM USERS WHERE email = ? and name = ? and birthday = ? and login = ?",
-                USER_MAPPER, user.getEmail(), user.getName(),
-                user.getBirthday(), user.getLogin()).get(0);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("USERS")
+                .usingGeneratedKeyColumns("id");
+
+        Map<String, Object> userInMap = Map.of("email", user.getEmail(), "login", user.getLogin(),
+                "name", user.getName(), "birthday", user.getBirthday());
+        int idUserInBD = simpleJdbcInsert.executeAndReturnKey(userInMap).intValue();
+        user.setId(idUserInBD);
+
+        return user;
     }
 
     @Override
@@ -53,12 +53,12 @@ public class UserStorageDataBase implements UserStorage {
 
     @Override
     public List<User> getUsers() {
-        return jdbcTemplate.query("SELECT * FROM USERS", USER_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM USERS", userMapper);
     }
 
     @Override
     public Optional<User> getById(Integer id) {
-        List<User> user = jdbcTemplate.query("SELECT * FROM USERS WHERE id = ?", USER_MAPPER, id);
+        List<User> user = jdbcTemplate.query("SELECT * FROM USERS WHERE id = ?", userMapper, id);
         if (!user.isEmpty()) {
             return Optional.of(user.get(0));
         }
@@ -83,7 +83,7 @@ public class UserStorageDataBase implements UserStorage {
     public List<User> findAllFriends(Integer idUser) {
         String sqlQuery = String.format("SELECT * FROM USERS WHERE id IN (" +
                 "SELECT second_user_id FROM FRIENDS WHERE first_user_id = %d)", idUser);
-        return jdbcTemplate.query(sqlQuery, USER_MAPPER);
+        return jdbcTemplate.query(sqlQuery, userMapper);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class UserStorageDataBase implements UserStorage {
                 "FROM FRIENDS as f1 " +
                 "INNER JOIN FRIENDS as f2 ON f1.second_user_id = f2.second_user_id " +
                 "WHERE f1.first_user_id = %d AND f2.first_user_id = %d)", idUser1, idUser2);
-        return jdbcTemplate.query(sqlQuery, USER_MAPPER);
+        return jdbcTemplate.query(sqlQuery, userMapper);
     }
 
     @Override
