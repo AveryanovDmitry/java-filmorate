@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.*;
-;
 
 @Service
 @RequiredArgsConstructor
