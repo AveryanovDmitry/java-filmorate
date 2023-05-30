@@ -108,18 +108,18 @@ public class GenreStorageDataBase implements GenreStorage {
 
         Map<Integer, LinkedHashSet<Genre>> genreMap = new LinkedHashMap<>();
         for (FoFindAllGenresInMap entity : genresAndFilms) {
-            if (!genreMap.containsKey(entity.getFilm_id())) {
-                genreMap.put(entity.getFilm_id(), new LinkedHashSet<>());
+            if (!genreMap.containsKey(entity.getFilmId())) {
+                genreMap.put(entity.getFilmId(), new LinkedHashSet<>());
             }
-            genreMap.get(entity.getFilm_id()).add(new Genre(entity.genre_id, entity.name_genre));
+            genreMap.get(entity.getFilmId()).add(new Genre(entity.getGenreId(), entity.nameGenre));
         }
         return genreMap;
     }
 
     @Data
     private class FoFindAllGenresInMap {
-        private final Integer film_id;
-        private final Integer genre_id;
-        private final String name_genre;
+        private final Integer filmId;
+        private final Integer genreId;
+        private final String nameGenre;
     }
 }
