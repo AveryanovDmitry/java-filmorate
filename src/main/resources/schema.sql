@@ -29,7 +29,6 @@ create table IF NOT EXISTS FRIENDS
 (
     first_user_id  INTEGER               not null,
     second_user_id INTEGER               not null,
-    approve        BOOLEAN default FALSE not null,
     constraint first_user_id
         foreign key (first_user_id) references USERS (id),
     constraint second_user_id

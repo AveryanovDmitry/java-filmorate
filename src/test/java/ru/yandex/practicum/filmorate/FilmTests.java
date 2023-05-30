@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.dao.GenreStorage;
+import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.dao.implementation.FilmStorageDataBase;
 import ru.yandex.practicum.filmorate.dao.implementation.UserStorageDataBase;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -26,9 +27,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmTests {
 
-    final FilmStorageDataBase filmDbStorage;
-    final GenreStorage genreDbStorage;
-    final UserStorageDataBase userStorage;
+    private final FilmStorageDataBase filmDbStorage;
+    private final GenreStorage genreDbStorage;
+    private final UserStorageDataBase userStorage;
+
+    private final LikesStorage likesStorage;
 
     @BeforeEach
     void createdFilmForDB() {
@@ -69,14 +72,14 @@ class FilmTests {
 
     @Test
     void testAddLikeFilm() {
-        assertTrue(filmDbStorage.addLike(1, 1), "Лайк не добавлен");
-        filmDbStorage.deleteLike(1, 1);
+        assertTrue(likesStorage.addLike(1, 1), "Лайк не добавлен");
+        likesStorage.deleteLike(1, 1);
     }
 
     @Test
     void testDeleteLike() {
-        filmDbStorage.addLike(1, 1);
-        assertTrue(filmDbStorage.deleteLike(1, 1), "Лайк не удален");
+        likesStorage.addLike(1, 1);
+        assertTrue(likesStorage.deleteLike(1, 1), "Лайк не удален");
     }
 
     void checkFindFilmById(Integer idFilm) {

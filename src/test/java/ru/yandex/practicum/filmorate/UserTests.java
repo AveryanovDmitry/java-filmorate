@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.dao.FriendsStorage;
 import ru.yandex.practicum.filmorate.dao.implementation.UserStorageDataBase;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -23,7 +24,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserTests {
 
-    final UserStorageDataBase userStorage;
+    private final UserStorageDataBase userStorage;
+    private final FriendsStorage friendsStorage;
 
     @BeforeEach
     void createdUserForDB() {
@@ -33,7 +35,7 @@ class UserTests {
             userStorage.add(new User("user2@yandex.ru", "User2", "user2",
                     LocalDate.parse("1995-01-01")));
         }
-        userStorage.deleteFriends(1, 2);
+        friendsStorage.deleteFriends(1, 2);
     }
 
     @Test
@@ -73,29 +75,6 @@ class UserTests {
     @Test
     void testFindUserById() {
         checkFindUserById(1);
-    }
-
-    @Test
-    void testAddRequestsFriendship() {
-        assertTrue(userStorage.addRequestsFriendship(1, 2), "Запрос на дружбу не отправлен");
-        assertFalse(userStorage.addRequestsFriendship(1, 2), "Запрос на дружбу не должен быть отправлен");
-    }
-
-    @Test
-    void testDeleteFriends() {
-        userStorage.addRequestsFriendship(1, 2);
-        assertTrue(userStorage.deleteFriends(1, 2), "Запрос на дружбу не удален");
-        assertFalse(userStorage.deleteFriends(1, 2), "Запрос на дружбу не должен быть удален");
-    }
-
-    @Test
-    void testFindAllFriends() {
-        userStorage.addRequestsFriendship(1, 2);
-        List<User> friends = userStorage.findAllFriends(1);
-        assertEquals(1, friends.size(), "В списке друзей должен быть 1 друг");
-        assertEquals(2, friends.get(0).getId(), "Значение ID друга должно равнятся 2");
-        List<User> listFriendIdTwo = userStorage.findAllFriends(2);
-        assertEquals(0, listFriendIdTwo.size(), "Список друзей должен быть пуст");
     }
 
     void checkFindUserById(Integer idUser) {

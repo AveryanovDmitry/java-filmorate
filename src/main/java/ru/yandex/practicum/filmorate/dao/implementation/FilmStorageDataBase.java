@@ -62,14 +62,6 @@ public class FilmStorageDataBase implements FilmStorage {
     }
 
     @Override
-    public boolean addLike(Integer idFilm, Integer idUser) {
-        if (!findLikeUserToFilm(idFilm, idUser)) {
-            return jdbcTemplate.update(String.format("INSERT INTO LIKES VALUES (%d, %d)", idFilm, idUser)) == 1;
-        }
-        return false;
-    }
-
-    @Override
     public List<Film> mostPopulars(Integer limit) {
         String sqlQuery = String.format("SELECT films.*, " +
                 "count(likes.film_id) as count_likes, mpa.mpa_name as mpa_name " +
@@ -80,20 +72,5 @@ public class FilmStorageDataBase implements FilmStorage {
                 "ORDER BY count_likes DESC, films.name " +
                 "LIMIT %d", limit);
         return jdbcTemplate.query(sqlQuery, filmMapper);
-    }
-
-    @Override
-    public boolean deleteLike(Integer idFilm, Integer idUser) {
-        if (findLikeUserToFilm(idFilm, idUser)) {
-            return jdbcTemplate.update("DELETE FROM LIKES WHERE film_id = ? AND user_id = ?", idFilm, idUser) > 0;
-        }
-        return false;
-    }
-
-    private boolean findLikeUserToFilm(Integer idFilm, Integer idUser) {
-        String sqlQuery = String.format("SELECT COUNT(*)\n" +
-                "FROM LIKES\n" +
-                "WHERE FILM_ID = %d AND USER_ID = %d", idFilm, idUser);
-        return jdbcTemplate.queryForObject(sqlQuery, Integer.class) == 1;
     }
 }

@@ -14,11 +14,5 @@ public interface UserStorage {
 
     Optional<User> getById(Integer id);
 
-    boolean addRequestsFriendship(Integer idUser, Integer idFriend);
 
-    boolean deleteFriends(Integer idUser, Integer idFriend);
-
-    List<User> findAllFriends(Integer idUser);
-
-    List<User> findCommonFriends(Integer idUser1, Integer idUser2);
 }

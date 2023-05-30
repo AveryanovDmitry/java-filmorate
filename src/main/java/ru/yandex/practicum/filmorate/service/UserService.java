@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FriendsStorage;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendsStorage friendsStorage;
 
     public User add(User user) {
         checkUserName(user);
@@ -39,26 +41,26 @@ public class UserService {
         checkUserAndFriendId(idUser, idFriend);
         getById(idUser);
         getById(idFriend);
-        userStorage.addRequestsFriendship(idUser, idFriend);
+        friendsStorage.addRequestsFriendship(idUser, idFriend);
     }
 
     public void deleteFriend(Integer idUser, Integer idFriend) {
         checkUserAndFriendId(idUser, idFriend);
         getById(idUser);
         getById(idFriend);
-        if (!userStorage.deleteFriends(idUser, idFriend)) {
+        if (!friendsStorage.deleteFriends(idUser, idFriend)) {
             throw new NotFoundException("Не удалось удалить пользователя из друзей");
         }
     }
 
     public List<User> getUserFriends(Integer idUser) {
         getById(idUser);
-        return userStorage.findAllFriends(idUser);
+        return friendsStorage.findAllFriends(idUser);
     }
 
     public List<User> getCommonFriends(Integer idUser, Integer idFriend) {
         checkUserAndFriendId(idUser, idFriend);
-        return userStorage.findCommonFriends(idUser, idFriend);
+        return friendsStorage.findCommonFriends(idUser, idFriend);
     }
 
     private void checkUserName(User user) {

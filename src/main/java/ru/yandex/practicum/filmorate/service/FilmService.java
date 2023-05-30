@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -22,8 +23,9 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final LocalDate VALID_DATE = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
-
     private final GenreService genreService;
+
+    private final LikesStorage likesStorage;
 
     public Film add(Film film) {
         checkReleaseDate(film);
@@ -67,14 +69,14 @@ public class FilmService {
     }
 
     public void addLikeFilm(Integer filmId, Integer userId) {
-        filmStorage.addLike(filmId, userId);
+        likesStorage.addLike(filmId, userId);
         log.info("добавили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 
     public void deleteLikeFilm(Integer filmId, Integer userId) {
         validateIsPositive(userId);
         validateIsPositive(filmId);
-        filmStorage.deleteLike(filmId, userId);
+        likesStorage.deleteLike(filmId, userId);
         log.info("удалили like пользователя с id {} фильму с id {}", userId, filmId);
     }
 

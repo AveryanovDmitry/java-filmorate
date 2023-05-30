@@ -14,9 +14,5 @@ public interface FilmStorage {
 
     Optional<Film> getById(Integer id);
 
-    boolean addLike(Integer idFilm, Integer idUser);
-
     List<Film> mostPopulars(Integer limit);
-
-    boolean deleteLike(Integer idFilm, Integer idUser);
 }
