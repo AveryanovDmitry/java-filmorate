@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.dao.FriendsStorage;
 import ru.yandex.practicum.filmorate.dao.mappers.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
