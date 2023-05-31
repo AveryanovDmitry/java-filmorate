@@ -28,7 +28,7 @@ class GenreTests {
         nameGenre.add("Документальный");
         nameGenre.add("Боевик");
         for (int i = 0; i < nameGenre.size(); i++) {
-            assertEquals(genreDbStorage.findById(i + 1), nameGenre.get(i), "Название не соответствует");
+            assertEquals(genreDbStorage.findById(i + 1).getName(), nameGenre.get(i), "Название не соответствует");
         }
     }
 

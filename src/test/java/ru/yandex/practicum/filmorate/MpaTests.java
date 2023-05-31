@@ -27,7 +27,7 @@ class MpaTests {
         nameMpa.add("R");
         nameMpa.add("NC-17");
         for (int i = 0; i < nameMpa.size(); i++) {
-            assertEquals(mpaDbStorage.findById(i + 1), nameMpa.get(i), "Название не соответствует");
+            assertEquals(mpaDbStorage.findById(i + 1).getName(), nameMpa.get(i), "Название не соответствует");
         }
     }
 
