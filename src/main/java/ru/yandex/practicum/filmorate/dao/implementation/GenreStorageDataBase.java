@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.dao.implementation;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -20,16 +20,12 @@ import java.util.*;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class GenreStorageDataBase implements GenreStorage {
 
     private final GenreMapper genreMapper;
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public GenreStorageDataBase(JdbcTemplate jdbcTemplate, GenreMapper genreMapper) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreMapper = genreMapper;
-    }
+    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Override
     public void add(Set<Genre> genreSet, Integer film) {
@@ -50,13 +46,13 @@ public class GenreStorageDataBase implements GenreStorage {
     }
 
     @Override
-    public String findById(Integer id) {
-        String sqlQuery = String.format("SELECT name FROM GENRE WHERE GENRE_ID = %d", id);
-        List<String> names = jdbcTemplate.queryForList(sqlQuery, String.class);
-        if (names.size() != 1) {
+    public Genre findById(Integer id) {
+        String sqlQuery = String.format("SELECT * FROM GENRE WHERE GENRE_ID = %d", id);
+        List<Genre> genreList = jdbcTemplate.query(sqlQuery, genreMapper);
+        if (genreList.size() != 1) {
             throw new NotFoundException("Некорректный id жанра.");
         }
-        return names.get(0);
+        return genreList.get(0);
     }
 
     @Override
@@ -76,14 +72,8 @@ public class GenreStorageDataBase implements GenreStorage {
 
     @Override
     public boolean deleteGenre(Integer idFilm, Integer idGenre) {
-        String sqlQuery = String.format("SELECT COUNT(*)\n" +
-                "FROM FILM_TO_GENRE\n" +
-                "WHERE FILM_ID = %d AND GENRE_ID = %d", idFilm, idGenre);
-        if (jdbcTemplate.queryForObject(sqlQuery, Integer.class) == 1) {
-            return jdbcTemplate.update("DELETE FROM FILM_TO_GENRE WHERE FILM_ID = ? AND GENRE_ID = ?",
-                    idFilm, idGenre) > 0;
-        }
-        return false;
+        return jdbcTemplate.update("DELETE FROM FILM_TO_GENRE WHERE FILM_ID = ? AND GENRE_ID = ?",
+                idFilm, idGenre) > 0;
     }
 
     @Override
@@ -96,28 +86,24 @@ public class GenreStorageDataBase implements GenreStorage {
     @Override
     public Map<Integer, LinkedHashSet<Genre>> getGenresListFilmsId(List<Integer> idFilms) {
         SqlParameterSource parameters = new MapSqlParameterSource("ids", idFilms);
-        NamedParameterJdbcTemplate namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-
-        List<FoFindAllGenresInMap> genresAndFilms = namedParameterJdbcTemplate.query(
+        List<FoFindAllGenresForMap> genresAndFilms = namedParameterJdbcTemplate.query(
                 "SELECT GF.film_id as film_id, GF.genre_id as genre_id, g.name as name FROM GENRE_FILM as GF " +
                         "JOIN GENRE as G on gf.genre_id = g.genre_id " +
                         "WHERE gf.FILM_ID in (:ids)",
                 parameters,
-                (rs, rowNum) -> new FoFindAllGenresInMap(rs.getInt("film_id"),
+                (rs, rowNum) -> new FoFindAllGenresForMap(rs.getInt("film_id"),
                         rs.getInt("genre_id"), rs.getString("name")));
 
         Map<Integer, LinkedHashSet<Genre>> genreMap = new LinkedHashMap<>();
-        for (FoFindAllGenresInMap entity : genresAndFilms) {
-            if (!genreMap.containsKey(entity.getFilmId())) {
-                genreMap.put(entity.getFilmId(), new LinkedHashSet<>());
-            }
-            genreMap.get(entity.getFilmId()).add(new Genre(entity.getGenreId(), entity.nameGenre));
+        for (FoFindAllGenresForMap entity : genresAndFilms) {
+            final LinkedHashSet<Genre> genres = genreMap.computeIfAbsent(entity.getFilmId(), k -> new LinkedHashSet<>());
+            genres.add(new Genre(entity.getGenreId(), entity.nameGenre));
         }
         return genreMap;
     }
 
     @Data
-    private class FoFindAllGenresInMap {
+    private class FoFindAllGenresForMap {
         private final Integer filmId;
         private final Integer genreId;
         private final String nameGenre;

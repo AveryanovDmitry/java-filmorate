@@ -31,23 +31,13 @@ public class Film {
     private Mpa mpa;
     private Set<Genre> genres;
 
-    private Integer rate;
-
     public Film(String name, String description, LocalDate releaseDate, Integer duration,
-                Mpa mpa, LinkedHashSet<Genre> genres, Integer rate) {
+                Mpa mpa, LinkedHashSet<Genre> genres) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.mpa = mpa;
         this.genres = Objects.requireNonNullElseGet(genres, LinkedHashSet::new);
-        this.rate = Objects.requireNonNullElseGet(rate, this::getRate);
-    }
-
-    public int getRate() {
-        if (rate == null) {
-            rate = 0;
-        }
-        return rate;
     }
 }

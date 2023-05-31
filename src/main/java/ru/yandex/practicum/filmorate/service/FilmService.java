@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.LikesStorage;
 import ru.yandex.practicum.filmorate.exeption.MyValidationExeption;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
@@ -23,8 +24,7 @@ import java.util.stream.Collectors;
 public class FilmService {
     private static final LocalDate VALID_DATE = LocalDate.of(1895, 12, 28);
     private final FilmStorage filmStorage;
-    private final GenreService genreService;
-
+    private final GenreStorage genreStorage;
     private final LikesStorage likesStorage;
 
     public Film add(Film film) {
@@ -32,39 +32,28 @@ public class FilmService {
         Film filmWithId = filmStorage.add(film);
 
         if (!film.getGenres().isEmpty()) {
-            genreService.addGenres(film.getGenres(), filmWithId.getId());
+            genreStorage.add(film.getGenres(), filmWithId.getId());
         }
         return filmWithId;
     }
 
     public Film update(Film film) {
-        checkId(film.getId());
+        filmStorage.checkId(film.getId());
         checkReleaseDate(film);
         filmStorage.update(film);
-        genreService.update(film.getGenres(), film.getId());
+        genreStorage.updateGenre(film.getGenres(), film.getId());
 
         return film;
     }
 
     public List<Film> getFilms() {
-        List<Film> films = filmStorage.getFilms();
-        if (!films.isEmpty()) {
-            List<Integer> idFilms = films.stream().map(Film::getId).collect(Collectors.toList());
-            Map<Integer, LinkedHashSet<Genre>> mapIdFilmGenres = genreService.getGenresListFilmsId(idFilms);
-            for (Film film : films) {
-                if (mapIdFilmGenres.containsKey(film.getId())) {
-                    film.setGenres(mapIdFilmGenres.get(film.getId()));
-                }
-            }
-        }
-
-        return films;
+        return addGenresForFilms(filmStorage.getFilms());
     }
 
     public Film getById(Integer id) {
         Film film = filmStorage.getById(id)
                 .orElseThrow(() -> new NotFoundException("Фильма с id " + id + " не существует"));
-        film.setGenres(genreService.getFilmGenresByFilmId(id));
+        film.setGenres(genreStorage.getFilmGenresByFilmId(id));
         return film;
     }
 
@@ -81,7 +70,7 @@ public class FilmService {
     }
 
     public List<Film> getPopularFilms(Integer count) {
-        return filmStorage.mostPopulars(count);
+        return addGenresForFilms(filmStorage.mostPopulars(count));
     }
 
     private void checkReleaseDate(Film film) {
@@ -97,11 +86,16 @@ public class FilmService {
         }
     }
 
-    private Film checkId(Integer id) {
-        if (id > 0) {
-            return filmStorage.getById(id).orElseThrow(() -> new NotFoundException("Фильма с таким id не существует"));
-        } else {
-            throw new NotFoundException("Проверьте id пользователя");
+    private List<Film> addGenresForFilms(List<Film> films) {
+        if (!films.isEmpty()) {
+            List<Integer> idFilms = films.stream().map(Film::getId).collect(Collectors.toList());
+            Map<Integer, LinkedHashSet<Genre>> mapIdFilmGenres = genreStorage.getGenresListFilmsId(idFilms);
+            for (Film film : films) {
+                if (mapIdFilmGenres.containsKey(film.getId())) {
+                    film.setGenres(mapIdFilmGenres.get(film.getId()));
+                }
+            }
         }
+        return films;
     }
 }

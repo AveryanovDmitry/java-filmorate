@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.dao.implementation;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.MpaStorage;
+import ru.yandex.practicum.filmorate.dao.mappers.MpaMapper;
 import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Mpa;
 
@@ -14,20 +16,14 @@ import java.util.List;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class MpaStorageDataBase implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public MpaStorageDataBase(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final MpaMapper mpaMapper;
 
     @Override
-    public String findById(Integer id) {
-        log.info("MpaDbStorage. findById.");
-        String sqlQuery = String.format("SELECT MPA_NAME " +
-                "FROM MPA WHERE MPA_ID = %d", id);
-        List<String> names = jdbcTemplate.queryForList(sqlQuery, String.class);
+    public Mpa findById(Integer id) {
+        List<Mpa> names = jdbcTemplate.query(String.format("SELECT * FROM MPA WHERE MPA_ID = %d", id), mpaMapper);
         if (names.size() != 1) {
             throw new NotFoundException("Некорректный id MPA.");
         }

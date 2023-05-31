@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User update(User user) {
-        checkId(user.getId());
+        userStorage.checkId(user.getId());
         checkUserName(user);
         return userStorage.update(user);
     }
@@ -72,14 +72,6 @@ public class UserService {
     private void checkUserAndFriendId(Integer user, Integer friend) {
         if (user < 1 || friend < 1) {
             throw new NotFoundException("Id должны содержать числа больше нуля");
-        }
-    }
-
-    private User checkId(Integer id) {
-        if (id > 0) {
-            return userStorage.getById(id).orElseThrow(() -> new NotFoundException("Пользователя с таким id не существует"));
-        } else {
-            throw new NotFoundException("Проверьте id фильма");
         }
     }
 }

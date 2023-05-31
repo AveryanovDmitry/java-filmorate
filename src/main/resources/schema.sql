@@ -44,7 +44,6 @@ create table IF NOT EXISTS FILMS
     description CHARACTER VARYING(200) not null,
     releaseDate DATE                   not null,
     duration    INTEGER                not null,
-    rate        INTEGER                not null,
     constraint FILMS_PK primary key (id),
     constraint FILMS_FK foreign key (mpa_id) references MPA (mpa_id)
 );

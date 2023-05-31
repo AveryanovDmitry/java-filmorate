@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -21,9 +22,7 @@ public class FriendsStorageDateBase implements FriendsStorage {
     @Override
     public boolean addRequestsFriendship(Integer sender, Integer recipient) {
         if (!findRequestsFriendship(sender, recipient)) {
-            HashMap<String, Integer> map = new HashMap<>();
-            map.put("first_user_id", sender);
-            map.put("second_user_id", recipient);
+            Map<String, Integer> map = Map.of("first_user_id", sender, "second_user_id", recipient);
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                     .withTableName("FRIENDS")
                     .usingColumns("first_user_id", "second_user_id");

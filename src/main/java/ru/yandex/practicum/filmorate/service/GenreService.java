@@ -27,7 +27,7 @@ public class GenreService {
     }
 
     public Genre getById(Integer id) {
-        return new Genre(id, genreStorage.findById(id));
+        return genreStorage.findById(id);
     }
 
     public void addGenres(Set<Genre> genres, Integer id) {

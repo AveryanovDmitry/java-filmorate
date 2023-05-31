@@ -17,6 +17,6 @@ public class MpaService {
     }
 
     public Mpa getById(Integer id) {
-        return new Mpa(id, mpaStorage.findById(id));
+        return mpaStorage.findById(id);
     }
 }

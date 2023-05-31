@@ -4,4 +4,6 @@ public interface LikesStorage {
     boolean addLike(Integer idFilm, Integer idUser);
 
     boolean deleteLike(Integer idFilm, Integer idUser);
+
+    Integer getAmountLikesFilm(Integer idFilm);
 }

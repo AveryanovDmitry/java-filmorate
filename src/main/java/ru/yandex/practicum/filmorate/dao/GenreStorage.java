@@ -11,7 +11,7 @@ public interface GenreStorage {
 
     void add(Set<Genre> genres, Integer film);
 
-    String findById(Integer id);
+    Genre findById(Integer id);
 
     Set<Genre> findAll();
 

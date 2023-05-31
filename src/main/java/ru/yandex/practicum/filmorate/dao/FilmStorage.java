@@ -15,4 +15,6 @@ public interface FilmStorage {
     Optional<Film> getById(Integer id);
 
     List<Film> mostPopulars(Integer limit);
+
+    void checkId(Integer id);
 }

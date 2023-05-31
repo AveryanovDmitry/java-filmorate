@@ -14,5 +14,5 @@ public interface UserStorage {
 
     Optional<User> getById(Integer id);
 
-
+    void checkId(Integer id);
 }

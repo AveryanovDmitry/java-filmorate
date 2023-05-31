@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.mappers.FilmMapper;
+import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
@@ -25,7 +26,7 @@ public class FilmStorageDataBase implements FilmStorage {
 
         Map<String, Object> filmInMap = Map.of("name", film.getName(), "mpa_id", film.getMpa().getId(),
                 "description", film.getDescription(), "releaseDate", film.getReleaseDate(),
-                "duration", film.getDuration(), "rate", film.getRate());
+                "duration", film.getDuration());
         int idUserInBD = simpleJdbcInsert.executeAndReturnKey(filmInMap).intValue();
         film.setId(idUserInBD);
 
@@ -34,7 +35,7 @@ public class FilmStorageDataBase implements FilmStorage {
 
     public void update(Film film) {
         String sqlQuery = "UPDATE FILMS " +
-                "SET name = ?, mpa_id = ?, description = ? , releaseDate = ?, duration = ?, rate = ? " +
+                "SET name = ?, mpa_id = ?, description = ? , releaseDate = ?, duration = ?" +
                 "WHERE id = ?";
         jdbcTemplate.update(sqlQuery,
                 film.getName(),
@@ -42,7 +43,6 @@ public class FilmStorageDataBase implements FilmStorage {
                 film.getDescription(),
                 film.getReleaseDate(),
                 film.getDuration(),
-                film.getRate(),
                 film.getId());
     }
 
@@ -72,5 +72,12 @@ public class FilmStorageDataBase implements FilmStorage {
                 "ORDER BY count_likes DESC, films.name " +
                 "LIMIT %d", limit);
         return jdbcTemplate.query(sqlQuery, filmMapper);
+    }
+
+    public void checkId(Integer id) {
+        String sqlQuery = String.format("select exists(SELECT * FROM FILMS WHERE id = %d)", id);
+        if (!Boolean.TRUE.equals(jdbcTemplate.queryForObject(sqlQuery, Boolean.class))) {
+            throw new NotFoundException("Фильма с таким id не существует");
+        }
     }
 }

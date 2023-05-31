@@ -65,11 +65,10 @@ public class UserStorageDataBase implements UserStorage {
         return Optional.empty();
     }
 
-    private User checkId(Integer id) {
-        if (id > 0) {
-            return getById(id).orElseThrow(() -> new NotFoundException("Пользователя с таким id не существует"));
-        } else {
-            throw new NotFoundException("Проверьте id пользователя");
+    public void checkId(Integer id) {
+        String sqlQuery = String.format("select exists(SELECT * FROM USERS WHERE id = %d)", id);
+        if (!Boolean.TRUE.equals(jdbcTemplate.queryForObject(sqlQuery, Boolean.class))) {
+            throw new NotFoundException("Пользователя с таким id не существует");
         }
     }
 }

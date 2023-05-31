@@ -32,4 +32,13 @@ public class LikesStorageDataBase implements LikesStorage {
                 "WHERE FILM_ID = %d AND USER_ID = %d", idFilm, idUser);
         return jdbcTemplate.queryForObject(sqlQuery, Integer.class) == 1;
     }
+
+    public Integer getAmountLikesFilm(Integer idFilm) {
+        String sqlQuery = String.format("SELECT COUNT(*) FROM LIKES WHERE FILM_ID = %d", idFilm);
+        Integer rate = jdbcTemplate.queryForObject(sqlQuery, Integer.class);
+        if (rate == null) {
+            rate = 0;
+        }
+        return rate;
+    }
 }

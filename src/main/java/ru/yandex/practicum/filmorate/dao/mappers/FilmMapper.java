@@ -18,8 +18,7 @@ public class FilmMapper implements RowMapper<Film> {
                 rs.getDate("releaseDate").toLocalDate(),
                 rs.getInt("duration"),
                 new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")),
-                new LinkedHashSet<>(),
-                rs.getInt("rate"));
+                new LinkedHashSet<>());
         film.setId(rs.getInt("id"));
         return film;
     }

@@ -37,12 +37,12 @@ class FilmTests {
     void createdFilmForDB() {
         if (filmDbStorage.getFilms().size() != 2) {
             LinkedHashSet<Genre> genres = new LinkedHashSet<>();
-            genres.add(new Genre(2, genreDbStorage.findById(2)));
+            genres.add(genreDbStorage.findById(2));
             Film film = new Film("Film1", "Description film1", LocalDate.parse("1999-01-01"),
-                    80, new Mpa(1, "G"), genres, 4);
+                    80, new Mpa(1, "G"), genres);
             filmDbStorage.add(film);
             Film filmNext = new Film("Film2", "Description film2", LocalDate.parse("2020-01-01"),
-                    70, new Mpa(2, "PG"), genres, 0);
+                    70, new Mpa(2, "PG"), genres);
             filmDbStorage.add(filmNext);
         }
         if (userStorage.getUsers().size() != 2) {
