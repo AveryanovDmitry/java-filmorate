@@ -1,41 +1,35 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.genre.GenreDao;
 
-import java.util.*;
+import java.util.Collection;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class GenreService {
-    private final GenreStorage genreStorage;
 
-    public Set<Genre> getAll() {
-        return genreStorage.findAll();
+    private final GenreDao genreDao;
+
+    @Autowired
+    public GenreService(GenreDao genreDao) {
+        this.genreDao = genreDao;
     }
 
-    public Set<Genre> getFilmGenresByFilmId(Integer id) {
-        return genreStorage.getFilmGenresByFilmId(id);
+    public Genre create(Genre genre) {
+        genre = genreDao.create(genre);
+        log.info("Жанр {} c id {} был успешно создан", genre.getName(), genre.getId());
+        return genre;
     }
 
-    public Map<Integer, LinkedHashSet<Genre>> getGenresListFilmsId(List<Integer> filmsId) {
-        return genreStorage.getGenresListFilmsId(filmsId);
+    public Genre getGenreById(int id) {
+        return genreDao.getGenreById(id);
     }
 
-    public Genre getById(Integer id) {
-        return genreStorage.findById(id);
-    }
-
-    public void addGenres(Set<Genre> genres, Integer id) {
-        genreStorage.add(genres, id);
-        log.info("Добавлены жанры: {}", genres);
-    }
-
-    public void update(Set<Genre> genres, Integer id) {
-        genreStorage.updateGenre(genres, id);
+    public Collection<Genre> getAll() {
+        return genreDao.getAll();
     }
 }

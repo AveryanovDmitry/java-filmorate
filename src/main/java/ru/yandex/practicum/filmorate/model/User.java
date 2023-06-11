@@ -1,33 +1,42 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Data
+@Builder
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
-    @EqualsAndHashCode.Exclude
-    private int id;
+    int id;
+    @Email
+    String email;
+    @NotBlank
+    String login;
+    String name;
+    @Past
+    LocalDate birthday;
+    @JsonIgnore
+    Set<User> friends;
 
-    private String name;
-
-    @Email(message = "электронная почта не может быть пустой и должна содержать символ @")
-    @NotEmpty
-    private String email;
-
-    @NotBlank(message = "логин не может быть пустым и содержать пробелы")
-    @Pattern(regexp = "^\\S*", message = "логин не может быть пустым и содержать пробелы")
-    private String login;
-
-    @NotNull
-    @PastOrPresent(message = "дата рождения не может быть в будущем")
-    private LocalDate birthday;
-
-    public User(String name, String login, String email, LocalDate birthday) {
-        this.name = name;
-        this.login = login;
-        this.email = email;
-        this.birthday = birthday;
+    public Map<String, Object> toMap() {
+        Map<String, Object> values = new HashMap<>();
+        values.put("email", email);
+        values.put("login", login);
+        values.put("name", name);
+        values.put("birthday", birthday);
+        return values;
     }
 }

@@ -1,77 +1,67 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dao.FriendsStorage;
-import ru.yandex.practicum.filmorate.exeption.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
-    private final FriendsStorage friendsStorage;
 
-    public User add(User user) {
-        checkUserName(user);
-        return userStorage.add(user);
+    @Autowired
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public User update(User user) {
-        userStorage.checkId(user.getId());
-        checkUserName(user);
-        return userStorage.update(user);
-    }
-
-    public List<User> getUsers() {
-        return userStorage.getUsers();
-    }
-
-    public User getById(Integer id) {
-        return userStorage.getById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователя с id " + id + " не существует"));
-    }
-
-    public void addFriend(Integer idUser, Integer idFriend) {
-        checkUserAndFriendId(idUser, idFriend);
-        getById(idUser);
-        getById(idFriend);
-        friendsStorage.addRequestsFriendship(idUser, idFriend);
-    }
-
-    public void deleteFriend(Integer idUser, Integer idFriend) {
-        checkUserAndFriendId(idUser, idFriend);
-        getById(idUser);
-        getById(idFriend);
-        if (!friendsStorage.deleteFriends(idUser, idFriend)) {
-            throw new NotFoundException("Не удалось удалить пользователя из друзей");
-        }
-    }
-
-    public List<User> getUserFriends(Integer idUser) {
-        getById(idUser);
-        return friendsStorage.findAllFriends(idUser);
-    }
-
-    public List<User> getCommonFriends(Integer idUser, Integer idFriend) {
-        checkUserAndFriendId(idUser, idFriend);
-        return friendsStorage.findCommonFriends(idUser, idFriend);
-    }
-
-    private void checkUserName(User user) {
+    public User create(User user) {
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
+        user = userStorage.create(user);
+        log.info("Пользователь с идентификатором {} и логином {} был создан", user.getId(), user.getLogin());
+        return user;
     }
 
-    private void checkUserAndFriendId(Integer user, Integer friend) {
-        if (user < 1 || friend < 1) {
-            throw new NotFoundException("Id должны содержать числа больше нуля");
+    public User save(User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
         }
+        user = userStorage.save(user);
+        log.info("Данные пользователя {} (id={}) успешно обновлены", user.getLogin(), user.getId());
+        return user;
+    }
+
+    public Collection<User> getAll() {
+        return userStorage.getAll();
+    }
+
+    public User getUserById(int id) {
+        return userStorage.getUserById(id);
+    }
+
+    public void addFriend(int userId, int friendId) {
+        userStorage.addFriend(userId, friendId);
+        log.info("Создан запрос дружбы между пользователями {} и {}", userId, friendId);
+    }
+
+    public void deleteFriend(int userId, int friendId) {
+        userStorage.deleteFriend(userId, friendId);
+    }
+
+    public Collection<User> getFriendsList(int userId) {
+        User user = userStorage.getUserById(userId);
+        return userStorage.getFriendsList(user);
+    }
+
+    public Collection<User> getCommonFriendsList(int userId, int otherId) {
+        User user = userStorage.getUserById(userId);
+        User other = userStorage.getUserById(otherId);
+        return userStorage.getCommonFriendsList(user, other);
     }
 }
