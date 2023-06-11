@@ -31,6 +31,7 @@ public class Film {
     int duration;
     Rating mpa;
     Collection<Genre> genres;
+    Collection<Director> directors;
     @JsonIgnore
     Set<Integer> likes;
 

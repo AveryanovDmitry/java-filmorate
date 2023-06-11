@@ -46,6 +46,8 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
+        userStorage.getUserById(userId);
+        userStorage.getUserById(friendId);
         userStorage.addFriend(userId, friendId);
         log.info("Создан запрос дружбы между пользователями {} и {}", userId, friendId);
     }
