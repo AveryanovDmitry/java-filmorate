@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -73,5 +74,10 @@ public class FilmService {
         if (!film.getReleaseDate().isAfter(minFilmReleaseDate)) {
             throw new FilmBadReleaseDateException(String.format("Дата релиза должна быть позже %s", minFilmReleaseDate));
         }
+    }
+
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        return filmStorage.getCommonFilms(userStorage.getUserById(userId).getId(),
+                userStorage.getUserById(friendId).getId());
     }
 }
