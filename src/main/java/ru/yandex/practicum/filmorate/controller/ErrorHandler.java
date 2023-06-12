@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.*;
+
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice
@@ -15,7 +16,7 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
 public class ErrorHandler {
 
     @ExceptionHandler({FilmNotFoundException.class, UserNotFoundException.class,
-            GenreNotFoundException.class, RatingNotFoundException.class, ReviewNotFoundException.class})
+            GenreNotFoundException.class, RatingNotFoundException.class, DirectorNotFoundException.class, ReviewNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFound(final RuntimeException e) {
         log.info(e.getMessage());
@@ -28,6 +29,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleFriendshipError(final RuntimeException e) {
         log.info(e.getMessage());
+        e.printStackTrace();
         return new ErrorResponse("Ошибка добавления", e.getMessage());
     }
 
