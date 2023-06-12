@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.AlreadyFriendsException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.SearchBadParametrsException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -20,12 +21,7 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,6 +99,48 @@ public class FilmDbStorage implements FilmStorage {
         Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm);
         setGenresToFilms(films);
         setDirectorsToFilms(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> loadFoundFilms(String query, List<String> by) {
+        if ((query == null && by != null) || (query != null && by == null))
+            throw new SearchBadParametrsException();
+
+        List<String> badField = new ArrayList<>(List.copyOf(by));
+        badField.removeAll(Arrays.asList("director", "title"));
+        if (badField.size() > 0)
+            throw new SearchBadParametrsException(badField.toArray(new String[0]));
+
+        StringBuilder sqlBuild = new StringBuilder("SELECT f.film_id,\n" +
+                "       f.name film_name,\n" +
+                "       f.description,\n" +
+                "       f.release_date,\n" +
+                "       f.duration,\n" +
+                "       f.rating_id,\n" +
+                "       r.name rating_name\n" +
+                "FROM film f\n" +
+                "         JOIN rating r ON f.rating_id = r.rating_id\n" +
+                "         LEFT JOIN (SELECT film_id, COUNT(film_id) likes\n" +
+                "                    FROM likes\n" +
+                "                    GROUP BY film_id) l ON f.film_id = l.film_id\n" +
+                "         LEFT JOIN FILM_DIRECTOR FD ON f.FILM_ID = FD.FILM_ID\n" +
+                "         LEFT JOIN DIRECTOR D ON D.DIRECTOR_ID = FD.DIRECTOR_ID WHERE ");
+
+        if (query != null && by != null) {
+            if (by.contains("director")) sqlBuild.append("lower(d.name) LIKE lower('%'||:query||'%')");
+            if (by.size() > 1) sqlBuild.append(" OR ");
+            if (by.contains("title")) sqlBuild.append("lower(f.name) LIKE lower('%'||:query||'%')");
+        }
+        sqlBuild.append(" ORDER BY likes DESC LIMIT 10");
+
+
+        Collection<Film> films = namedJdbcTemplate.query(sqlBuild.toString(),
+                new MapSqlParameterSource().addValue("query", query),
+                this::mapRowToFilm);
+
+        setDirectorsToFilms(films);
+        setGenresToFilms(films);
         return films;
     }
 

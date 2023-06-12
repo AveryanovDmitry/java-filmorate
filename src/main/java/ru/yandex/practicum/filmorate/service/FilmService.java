@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -63,6 +64,11 @@ public class FilmService {
 
     public Collection<Film> getAll() {
         return filmStorage.getAll();
+    }
+
+    public Collection<Film> searchFilms(String query, List<String> by) {
+
+        return filmStorage.loadFoundFilms(query, by);
     }
 
     public Film getFilmById(int id) {
