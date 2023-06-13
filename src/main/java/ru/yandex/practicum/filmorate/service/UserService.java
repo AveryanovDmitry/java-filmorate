@@ -74,4 +74,8 @@ public class UserService {
         User other = userStorage.getUserById(otherId);
         return userStorage.getCommonFriendsList(user, other);
     }
+
+    public void deleteUserById(int id) {
+        userStorage.deleteUserById(id);
+    }
 }

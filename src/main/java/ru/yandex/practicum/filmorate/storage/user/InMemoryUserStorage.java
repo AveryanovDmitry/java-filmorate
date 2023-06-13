@@ -83,4 +83,9 @@ public class InMemoryUserStorage implements UserStorage {
                 .filter(otherFriends::contains)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void deleteUserById(int id) {
+
+    }
 }
