@@ -5,8 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmBadReleaseDateException;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.storage.director.DirectorDao;
+import ru.yandex.practicum.filmorate.storage.feed.FeedDao;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -19,24 +22,29 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final DirectorDao directorDao;
+
+    private final FeedDao feedDao;
     private final LocalDate minFilmReleaseDate = LocalDate.of(1895, 12, 28);
 
     @Autowired
     public FilmService(@Qualifier("FilmDbStorage") FilmStorage filmStorage, @Qualifier("UserDbStorage") UserStorage userStorage,
-                       DirectorDao directorDao) {
+                       DirectorDao directorDao, FeedDao feedDao) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.directorDao = directorDao;
+        this.feedDao = feedDao;
     }
 
     public void addLike(int filmId, int userId) {
         userStorage.getUserById(userId);
         filmStorage.addLike(filmId, userId);
+        feedDao.addFeedList(userId, filmId, EventType.LIKE, Operation.ADD);
     }
 
     public void deleteLike(int filmId, int userId) {
         userStorage.getUserById(userId);
         filmStorage.deleteLike(filmId, userId);
+        feedDao.addFeedList(userId, filmId, EventType.LIKE, Operation.REMOVE);
     }
 
     public Collection<Film> getFilmsByDirectorId(int directorId, String sortBy) {

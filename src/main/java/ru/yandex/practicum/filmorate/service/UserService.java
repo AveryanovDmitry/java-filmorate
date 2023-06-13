@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.feed.FeedDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
@@ -14,9 +17,12 @@ import java.util.Collection;
 public class UserService {
     private final UserStorage userStorage;
 
+    private final FeedDao feedDao;
+
     @Autowired
-    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage, FeedDao feedDao) {
         this.userStorage = userStorage;
+        this.feedDao = feedDao;
     }
 
     public User create(User user) {
@@ -49,11 +55,13 @@ public class UserService {
         userStorage.getUserById(userId);
         userStorage.getUserById(friendId);
         userStorage.addFriend(userId, friendId);
+        feedDao.addFeedList(userId, friendId, EventType.FRIEND, Operation.ADD);
         log.info("Создан запрос дружбы между пользователями {} и {}", userId, friendId);
     }
 
     public void deleteFriend(int userId, int friendId) {
         userStorage.deleteFriend(userId, friendId);
+        feedDao.addFeedList(userId, friendId, EventType.FRIEND, Operation.REMOVE);
     }
 
     public Collection<User> getFriendsList(int userId) {
