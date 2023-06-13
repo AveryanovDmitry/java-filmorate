@@ -392,4 +392,21 @@ public class FilmDbStorage implements FilmStorage {
                 .mpa(new Rating(resultSet.getInt("rating_id"), resultSet.getString("rating_name")))
                 .build();
     }
+
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sqlQuery = "SELECT f.*, " +
+                "f.name film_name, " +
+                "r.name rating_name, " +
+                "FROM film AS f " +
+                "JOIN rating r ON f.rating_id = r.rating_id " +
+                "LEFT JOIN likes AS l ON f.film_id = l.film_id " +
+                "WHERE l.film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
+                "AND l.film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
+                "GROUP BY l.film_id " +
+                "ORDER BY COUNT(l.user_id) DESC";
+        List<Film> films =  jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+        films.forEach(film -> film.setGenres(getGenresByFilmId(film.getId())));
+        return films;
+    }
 }
