@@ -74,4 +74,8 @@ public class UserService {
         User other = userStorage.getUserById(otherId);
         return userStorage.getCommonFriendsList(user, other);
     }
+
+    public Collection<Integer> getUserFilmIdsRecommendations(int userId) {
+        return userStorage.getUserFilmIdsRecommendations(userId);
+    }
 }

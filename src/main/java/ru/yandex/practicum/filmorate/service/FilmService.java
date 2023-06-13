@@ -73,6 +73,10 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
+    public Collection<Film> getFilmsByIds(Collection<Integer> filmIds) {
+        return filmStorage.getFilmsByIds(filmIds);
+    }
+
     public Film getFilmById(int id) {
         return filmStorage.getFilmById(id);
     }

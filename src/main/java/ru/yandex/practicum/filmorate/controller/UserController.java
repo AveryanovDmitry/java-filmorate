@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
@@ -22,9 +24,12 @@ import java.util.Collection;
 public class UserController {
     UserService userService;
 
+    FilmService filmService;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
+        this.filmService = filmService;
     }
 
     @PostMapping
@@ -65,5 +70,11 @@ public class UserController {
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getFriendsCommonList(@PathVariable int id, @PathVariable int otherId) {
         return userService.getCommonFriendsList(id, otherId);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public Collection<Film> getFilmsRecommendations(@PathVariable int id) {
+        Collection<Integer> filmIds = userService.getUserFilmIdsRecommendations(id);
+        return filmService.getFilmsByIds(filmIds);
     }
 }

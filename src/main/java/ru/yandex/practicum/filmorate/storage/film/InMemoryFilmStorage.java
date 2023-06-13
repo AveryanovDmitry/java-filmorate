@@ -42,6 +42,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getFilmsByIds(Collection<Integer> filmIds) {
+        return null;
+    }
+
+    @Override
     public Film getFilmById(int id) {
         if (films.get(id) == null) {
             throw new FilmNotFoundException(id);

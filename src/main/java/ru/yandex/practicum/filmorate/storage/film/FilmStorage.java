@@ -11,6 +11,8 @@ public interface FilmStorage {
 
     Collection<Film> getAll();
 
+    Collection<Film> getFilmsByIds(Collection<Integer> filmIds);
+
     Film getFilmById(int id);
 
     void addLike(int filmId, int userId);

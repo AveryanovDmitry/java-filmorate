@@ -107,6 +107,27 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public Collection<Film> getFilmsByIds(Collection<Integer> filmIds) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("films",
+                        filmIds);
+        String sqlQuery = "SELECT f.film_id, " +
+                "f.name film_name, " +
+                "f.description, " +
+                "f.release_date, " +
+                "f.duration, " +
+                "f.rating_id, " +
+                "r.name rating_name " +
+                "FROM film f " +
+                "JOIN rating r ON f.rating_id = r.rating_id " +
+                "WHERE f.film_id in (:films)";
+        Collection<Film> films = namedJdbcTemplate.query(sqlQuery, parameters, this::mapRowToFilm);
+        setGenresToFilms(films);
+        setDirectorsToFilms(films);
+        return films;
+    }
+
+    @Override
     public Film getFilmById(int id) {
         String sqlQuery = "SELECT f.film_id, " +
                 "f.name film_name, " +
