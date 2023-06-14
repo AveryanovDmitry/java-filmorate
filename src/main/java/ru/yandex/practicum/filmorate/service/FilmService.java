@@ -53,8 +53,15 @@ public class FilmService {
         return filmStorage.getFilmsByDirectorId(directorId, sortBy);
     }
 
-    public Collection<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+    public Collection<Film> getPopularFilms(Integer count, Integer genreId, Integer year) {
+        if (genreId == null && year == null) {
+            return filmStorage.getPopularFilms(count);
+        } else if (genreId != null && year == null) {
+            return filmStorage.getPopularFilmsWithGenre(count, genreId);
+        } else if (genreId == null) {
+            return filmStorage.getPopularFilmsWithYear(count, year);
+        }
+        return filmStorage.getPopularFilmsWithGenreAndYear(count, genreId, year);
     }
 
     public Film create(Film film) {

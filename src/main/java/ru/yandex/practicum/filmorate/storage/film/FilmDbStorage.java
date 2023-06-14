@@ -443,4 +443,57 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "DELETE FROM film WHERE film_id = ?";
         jdbcTemplate.update(sqlQuery, id);
     }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithGenreAndYear(Integer count, Integer genreId, Integer year) {
+        String sqlQuery = "SELECT f.*, f.name as film_name, r.name as rating_name, l.likes as likes " +
+                "FROM film as f " +
+                "JOIN rating as r ON f.rating_id = r.rating_id " +
+                "JOIN FILM_GENRE as gf on f.film_id = gf.film_id " +
+                "LEFT JOIN (SELECT film_id, COUNT(film_id) likes " +
+                "FROM likes " +
+                "GROUP BY film_id) as l ON f.film_id = l.film_id " +
+                "WHERE gf.genre_id = ? AND EXTRACT(YEAR FROM (f.release_date)) = ?" +
+                "ORDER BY likes DESC " +
+                "LIMIT ?";
+        Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, year, count);
+        setGenresToFilms(films);
+        setDirectorsToFilms(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithGenre(Integer count, Integer genreId) {
+        String sqlQuery = "SELECT f.*, f.name as film_name, r.name as rating_name, l.likes as likes " +
+                "FROM film as f " +
+                "JOIN rating as r ON f.rating_id = r.rating_id " +
+                "JOIN FILM_GENRE as gf on f.film_id = gf.film_id " +
+                "LEFT JOIN (SELECT film_id, COUNT(film_id) likes " +
+                "FROM likes " +
+                "GROUP BY film_id) as l ON f.film_id = l.film_id " +
+                "WHERE gf.genre_id = ? " +
+                "ORDER BY likes DESC " +
+                "LIMIT ?";
+        Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, count);
+        setGenresToFilms(films);
+        setDirectorsToFilms(films);
+        return films;
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithYear(Integer count, Integer year) {
+        String sqlQuery = "SELECT f.*, f.name as film_name, r.name as rating_name, l.likes as likes " +
+                "FROM film as f " +
+                "JOIN rating as r ON f.rating_id = r.rating_id " +
+                "LEFT JOIN (SELECT film_id, COUNT(film_id) likes " +
+                "FROM likes " +
+                "GROUP BY film_id) as l ON f.film_id = l.film_id " +
+                "WHERE EXTRACT(YEAR FROM (f.release_date)) = ? " +
+                "ORDER BY likes DESC " +
+                "LIMIT ?";
+        Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year, count);
+        setGenresToFilms(films);
+        setDirectorsToFilms(films);
+        return films;
+    }
 }

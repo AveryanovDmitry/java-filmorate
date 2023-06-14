@@ -97,4 +97,19 @@ public class InMemoryFilmStorage implements FilmStorage {
     public void deleteUserById(int id) {
 
     }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithGenreAndYear(Integer limit, Integer genreID, Integer year) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithGenre(Integer count, Integer genreId) {
+        return null;
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsWithYear(Integer count, Integer year) {
+        return null;
+    }
 }
