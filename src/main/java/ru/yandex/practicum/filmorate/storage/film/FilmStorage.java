@@ -29,4 +29,10 @@ public interface FilmStorage {
     List<Film> getCommonFilms(int userId, int friendId);
 
     void deleteUserById(int id);
+
+    Collection<Film> getPopularFilmsWithGenreAndYear(Integer limit, Integer genreID, Integer year);
+
+    Collection<Film> getPopularFilmsWithGenre(Integer count, Integer genreId);
+
+    Collection<Film> getPopularFilmsWithYear(Integer count, Integer year);
 }
