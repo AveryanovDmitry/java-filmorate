@@ -12,6 +12,8 @@ public interface FilmStorage {
 
     Collection<Film> getAll();
 
+    Collection<Film> getFilmsByIds(Collection<Integer> filmIds);
+
     Collection<Film> loadFoundFilms(String query, List<String> by);
 
     Film getFilmById(int id);
