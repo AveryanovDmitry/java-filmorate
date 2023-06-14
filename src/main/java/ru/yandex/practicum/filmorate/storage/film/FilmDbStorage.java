@@ -10,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.AlreadyFriendsException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.SearchBadParametrsException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -200,9 +199,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void addLike(int filmId, int userId) {
         SqlRowSet likeRow = findLike(filmId, userId);
-        if (likeRow.next()) {
-            throw new AlreadyFriendsException();
-        } else {
+        if (!likeRow.next()) {
             String sqlQuery = "INSERT INTO likes(film_id, user_id) " +
                     "VALUES(?, ?)";
             jdbcTemplate.update(sqlQuery, filmId, userId);
@@ -454,7 +451,6 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM likes " +
                 "GROUP BY film_id) as l ON f.film_id = l.film_id " +
                 "WHERE gf.genre_id = ? AND EXTRACT(YEAR FROM (f.release_date)) = ?" +
-                "ORDER BY likes DESC " +
                 "LIMIT ?";
         Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, year, count);
         setGenresToFilms(films);
@@ -472,7 +468,6 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM likes " +
                 "GROUP BY film_id) as l ON f.film_id = l.film_id " +
                 "WHERE gf.genre_id = ? " +
-                "ORDER BY likes DESC " +
                 "LIMIT ?";
         Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, genreId, count);
         setGenresToFilms(films);
@@ -489,7 +484,6 @@ public class FilmDbStorage implements FilmStorage {
                 "FROM likes " +
                 "GROUP BY film_id) as l ON f.film_id = l.film_id " +
                 "WHERE EXTRACT(YEAR FROM (f.release_date)) = ? " +
-                "ORDER BY likes DESC " +
                 "LIMIT ?";
         Collection<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, year, count);
         setGenresToFilms(films);
