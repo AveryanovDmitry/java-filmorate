@@ -75,7 +75,11 @@ public class UserService {
         return userStorage.getCommonFriendsList(user, other);
     }
 
+    public Collection<Integer> getUserFilmIdsRecommendations(int userId) {
+        return userStorage.getUserFilmIdsRecommendations(userId);
+    }
+  
     public void deleteUserById(int id) {
-        userStorage.deleteUserById(id);
+      userStorage.deleteUserById(id);
     }
 }

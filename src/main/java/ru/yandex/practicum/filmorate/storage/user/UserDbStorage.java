@@ -154,6 +154,32 @@ public class UserDbStorage implements UserStorage {
 
     }
 
+    @Override
+    public Collection<Integer> getUserFilmIdsRecommendations(int userId) {
+        String getUserLikedFilms = "SELECT l.film_id " +
+                "FROM likes l " +
+                "WHERE l.user_id = ?";
+
+        String getOtherUsersFilms = "SELECT l.user_id, l.film_id " +
+                "FROM likes l  " +
+                "WHERE l.user_id != ?";
+
+        String findUserIdWithMaxCrossLikes = String.format("SELECT u2.user_id " +
+                "FROM (%s) u2 " +
+                "JOIN (%s) u1 ON u2.film_id = u1.film_id " +
+                "GROUP BY u2.user_id " +
+                "ORDER BY COUNT(*) DESC " +
+                "LIMIT 1", getOtherUsersFilms, getUserLikedFilms);
+
+        String getRecommendedFilmIds = String.format("SELECT l.film_id " +
+                "FROM likes l " +
+                "WHERE l.user_id = (%s) " +
+                "AND l.film_id NOT IN (%s)", findUserIdWithMaxCrossLikes, getUserLikedFilms);
+
+        return jdbcTemplate.query(getRecommendedFilmIds,
+                ((rs, row) -> rs.getInt("film_id")), userId, userId, userId);
+    }
+
     private SqlRowSet findFriendRequest(int userId, int friendId) {
         String sqlQuery = "SELECT * " +
                 "FROM friendship " +
