@@ -77,4 +77,9 @@ public class UserController {
         Collection<Integer> filmIds = userService.getUserFilmIdsRecommendations(id);
         return filmService.getFilmsByIds(filmIds);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable int id) {
+        userService.deleteUserById(id);
+    }
 }

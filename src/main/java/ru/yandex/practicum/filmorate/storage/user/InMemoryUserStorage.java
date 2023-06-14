@@ -88,4 +88,9 @@ public class InMemoryUserStorage implements UserStorage {
     public Collection<Integer> getUserFilmIdsRecommendations(int userId) {
         return null;
     }
+
+    @Override
+    public void deleteUserById(int id) {
+
+    }
 }

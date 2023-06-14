@@ -437,4 +437,10 @@ public class FilmDbStorage implements FilmStorage {
         films.forEach(film -> film.setGenres(getGenresByFilmId(film.getId())));
         return films;
     }
+
+    @Override
+    public void deleteUserById(int id) {
+        String sqlQuery = "DELETE FROM film WHERE film_id = ?";
+        jdbcTemplate.update(sqlQuery, id);
+    }
 }
