@@ -78,7 +78,7 @@ public class FilmService {
     public Collection<Film> getFilmsByIds(Collection<Integer> filmIds) {
         return filmStorage.getFilmsByIds(filmIds);
     }
-  
+
     public Collection<Film> searchFilms(String query, List<String> by) {
         return filmStorage.loadFoundFilms(query, by);
     }

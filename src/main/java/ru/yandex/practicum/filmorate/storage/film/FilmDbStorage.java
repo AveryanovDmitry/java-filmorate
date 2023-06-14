@@ -21,7 +21,14 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -101,7 +108,7 @@ public class FilmDbStorage implements FilmStorage {
         setDirectorsToFilms(films);
         return films;
     }
-  
+
     @Override
     public Collection<Film> getFilmsByIds(Collection<Integer> filmIds) {
         SqlParameterSource parameters = new MapSqlParameterSource()
@@ -120,9 +127,9 @@ public class FilmDbStorage implements FilmStorage {
         Collection<Film> films = namedJdbcTemplate.query(sqlQuery, parameters, this::mapRowToFilm);
         setGenresToFilms(films);
         setDirectorsToFilms(films);
-          return films;
+        return films;
     }
-  
+
     @Override
     public Collection<Film> loadFoundFilms(String query, List<String> by) {
         if ((query == null && by != null) || (query != null && by == null))
@@ -426,7 +433,7 @@ public class FilmDbStorage implements FilmStorage {
                 "AND l.film_id IN (SELECT film_id FROM likes WHERE user_id = ?) " +
                 "GROUP BY l.film_id " +
                 "ORDER BY COUNT(l.user_id) DESC";
-        List<Film> films =  jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
+        List<Film> films = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, userId, friendId);
         films.forEach(film -> film.setGenres(getGenresByFilmId(film.getId())));
         return films;
     }
