@@ -71,13 +71,13 @@ public class UserController {
     public Collection<User> getFriendsCommonList(@PathVariable int id, @PathVariable int otherId) {
         return userService.getCommonFriendsList(id, otherId);
     }
-  
+
     @GetMapping("/{id}/recommendations")
     public Collection<Film> getFilmsRecommendations(@PathVariable int id) {
         Collection<Integer> filmIds = userService.getUserFilmIdsRecommendations(id);
         return filmService.getFilmsByIds(filmIds);
     }
-  
+
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable int id) {
         userService.deleteUserById(id);

@@ -78,8 +78,8 @@ public class UserService {
     public Collection<Integer> getUserFilmIdsRecommendations(int userId) {
         return userStorage.getUserFilmIdsRecommendations(userId);
     }
-  
+
     public void deleteUserById(int id) {
-      userStorage.deleteUserById(id);
+        userStorage.deleteUserById(id);
     }
 }
