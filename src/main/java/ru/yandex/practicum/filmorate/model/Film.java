@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 @Data
 @Builder
@@ -29,11 +27,13 @@ public class Film {
     LocalDate releaseDate;
     @PositiveOrZero
     int duration;
+
+    @NotNull
     Rating mpa;
+
     Collection<Genre> genres;
+
     Collection<Director> directors;
-    @JsonIgnore
-    Set<Integer> likes;
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();

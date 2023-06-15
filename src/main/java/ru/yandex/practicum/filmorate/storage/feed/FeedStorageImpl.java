@@ -17,11 +17,11 @@ import java.time.Instant;
 import java.util.List;
 
 @Component
-public class FeedDaoImpl implements FeedDao {
+public class FeedStorageImpl implements FeedStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public FeedDaoImpl(JdbcTemplate jdbcTemplate) {
+    public FeedStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

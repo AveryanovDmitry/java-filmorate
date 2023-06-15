@@ -1,13 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.storage.feed.FeedDao;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewDao;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -16,30 +16,20 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ReviewService {
     private final ReviewDao reviewDao;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
 
-    private final FeedDao feedDao;
-
-    @Autowired
-    public ReviewService(ReviewDao reviewDao,
-                         @Qualifier("UserDbStorage") UserStorage userStorage,
-                         @Qualifier("FilmDbStorage") FilmStorage filmStorage,
-                         FeedDao feedDao) {
-        this.reviewDao = reviewDao;
-        this.userStorage = userStorage;
-        this.filmStorage = filmStorage;
-        this.feedDao = feedDao;
-    }
+    private final FeedStorage feedStorage;
 
     public Review create(Review review) {
         userStorage.getUserById(review.getUserId());
         filmStorage.getFilmById(review.getFilmId());
 
         Review reviewSave = reviewDao.save(review);
-        feedDao.addFeedList(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.ADD);
+        feedStorage.addFeedList(review.getUserId(), review.getReviewId(), EventType.REVIEW, Operation.ADD);
         log.info("Отзыв (id={}) успешно создан", reviewSave.getReviewId());
         return reviewSave;
     }
@@ -49,7 +39,7 @@ public class ReviewService {
         filmStorage.getFilmById(review.getFilmId());
 
         Review reviewSave = reviewDao.update(review);
-        feedDao.addFeedList(reviewSave.getUserId(), reviewSave.getReviewId(), EventType.REVIEW, Operation.UPDATE);
+        feedStorage.addFeedList(reviewSave.getUserId(), reviewSave.getReviewId(), EventType.REVIEW, Operation.UPDATE);
         log.info("Отзыв (id={}) успешно обновлён", reviewSave.getReviewId());
         return reviewSave;
     }
@@ -59,7 +49,7 @@ public class ReviewService {
     }
 
     public void delete(int id) {
-        feedDao.addFeedList(get(id).getUserId(), get(id).getReviewId(), EventType.REVIEW, Operation.REMOVE);
+        feedStorage.addFeedList(get(id).getUserId(), get(id).getReviewId(), EventType.REVIEW, Operation.REMOVE);
         reviewDao.delete(id);
         log.info("Отзыв (id={}) успешно удалён", id);
     }
@@ -75,5 +65,4 @@ public class ReviewService {
         reviewDao.saveLike(isLike ? 1 : -1, id);
         log.info("Лайк/дизлайк к отзыву (id={}) успешно сохранён", id);
     }
-
 }

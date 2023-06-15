@@ -3,12 +3,12 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,16 +19,15 @@ public class Review {
     int reviewId;
 
     @NotBlank
-    @NonNull
     String content;
 
-    @NonNull
+    @NotNull
     Boolean isPositive;
 
-    @NonNull
+    @NotNull
     Integer userId;
 
-    @NonNull
+    @NotNull
     Integer filmId;
 
     @ReadOnlyProperty

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,9 +19,10 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/directors")
+@RequiredArgsConstructor
 public class DirectorController {
 
-    DirectorService directorService;
+    private DirectorService directorService;
 
     @Autowired
     public DirectorController(DirectorService directorService) {

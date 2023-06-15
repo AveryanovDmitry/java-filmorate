@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,6 +20,8 @@ import ru.yandex.practicum.filmorate.exception.RatingNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
+
+import javax.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -37,8 +40,7 @@ public class ErrorHandler {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleFriendshipError(final RuntimeException e) {
-        log.info(e.getMessage());
-        e.printStackTrace();
+        log.debug("Получен статус 404 Not found {}", e.getMessage(), e);
         return new ErrorResponse("Ошибка добавления", e.getMessage());
     }
 
@@ -60,7 +62,13 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
         log.info("Ошибка сервера {}", e.getClass().getName());
-        e.printStackTrace();
         return new ErrorResponse("Ошибка сервера", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handleNoPositive(ConstraintViolationException e) {
+        log.info("Полученное значение не может быть отрицательным");
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
