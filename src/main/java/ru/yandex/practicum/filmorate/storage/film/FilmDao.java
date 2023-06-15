@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.FilmSortBy;
 import java.util.Collection;
 import java.util.List;
 
-public interface FilmStorage {
+public interface FilmDao {
     Film create(Film film);
 
     Film save(Film film);

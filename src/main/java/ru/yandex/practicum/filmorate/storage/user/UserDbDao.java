@@ -20,11 +20,11 @@ import java.util.Collection;
 
 @Component("UserDbStorage")
 @Slf4j
-public class UserDbStorage implements UserStorage {
+public class UserDbDao implements UserDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate) {
+    public UserDbDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

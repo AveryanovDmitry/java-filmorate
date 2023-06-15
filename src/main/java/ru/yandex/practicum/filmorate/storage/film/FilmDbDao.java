@@ -32,12 +32,12 @@ import java.util.stream.Collectors;
 
 @Component("FilmDbStorage")
 @Slf4j
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbDao implements FilmDao {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedJdbcTemplate;
 
     @Autowired
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate) {
+    public FilmDbDao(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedJdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.namedJdbcTemplate = namedJdbcTemplate;
     }

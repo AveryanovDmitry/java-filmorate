@@ -8,8 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbDao;
+import ru.yandex.practicum.filmorate.storage.user.UserDbDao;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -21,8 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmDbStorageTests {
-    private final FilmDbStorage filmDbStorage;
-    private final UserDbStorage userDbStorage;
+    private final FilmDbDao filmDbStorage;
+    private final UserDbDao userDbStorage;
 
     User createUser() {
         return userDbStorage.create(User.builder()

@@ -3,19 +3,19 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Feed;
-import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.storage.feed.FeedDao;
+import ru.yandex.practicum.filmorate.storage.user.UserDao;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class FeedService {
-    private final FeedStorage feedStorage;
-    private final UserStorage userStorage;
+    private final FeedDao feedDao;
+    private final UserDao userDao;
 
     public List<Feed> getFeedList(int id) {
-        userStorage.getUserById(id);
-        return feedStorage.getFeedList(id);
+        userDao.getUserById(id);
+        return feedDao.getFeedList(id);
     }
 }
