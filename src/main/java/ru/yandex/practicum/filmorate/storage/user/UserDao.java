@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 
-public interface UserStorage {
+public interface UserDao {
     User create(User user);
 
     User save(User user);
@@ -20,4 +20,8 @@ public interface UserStorage {
     Collection<User> getFriendsList(User user);
 
     Collection<User> getCommonFriendsList(User user, User other);
+
+    Collection<Integer> getUserFilmIdsRecommendations(int userId);
+
+    void deleteUserById(int id);
 }

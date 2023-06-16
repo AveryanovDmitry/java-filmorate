@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.genre.GenreDao;
@@ -10,14 +10,10 @@ import java.util.Collection;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class GenreService {
 
     private final GenreDao genreDao;
-
-    @Autowired
-    public GenreService(GenreDao genreDao) {
-        this.genreDao = genreDao;
-    }
 
     public Genre create(Genre genre) {
         genre = genreDao.create(genre);
